@@ -6,6 +6,8 @@ import com.sun.source.tree.MethodInvocationTree;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import org.checkerframework.checker.linear.qual.Any;
+import org.checkerframework.checker.linear.qual.Top;
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -18,12 +20,17 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     final ProcessingEnvironment env;
 
+    /** The @{@link Unique} annotation. */
+    protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
+    /** The @{@link Any} annotation. */
+    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, Any.class);
+    /** The @{@link Top} annotation. */
+    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, Top.class);
+
     public LinearVisitor(final BaseTypeChecker checker) {
         super(checker);
         env = checker.getProcessingEnvironment();
     }
-
-    protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
 
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
@@ -42,6 +49,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         // UNIQUE)) {
         //            checker.reportError(rhs, "unique.alias.not.allowed");
         //        }
+        valueType.replaceAnnotation(TOP);
         return super.visitAssignment(node, p);
     }
 

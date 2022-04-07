@@ -34,6 +34,14 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         this.postInit();
     }
 
+    //    @Override
+    //    public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
+    //        if (!type.isAnnotatedInHierarchy(UNIQUE)) {
+    //            type.replaceAnnotation(TOP);
+    //        }
+    //        super.addComputedTypeAnnotations(elt, type);
+    //    }
+
     @Override
     protected QualifierHierarchy createQualifierHierarchy() {
         return new LinearQualifierHierarchy(this.getSupportedTypeQualifiers(), elements);

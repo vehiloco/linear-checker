@@ -14,7 +14,7 @@ ${CRYPTOCHECKER}/build/libs/linear-checker.jar
 
 # Command
 DEBUG=""
-CHECKER="org.checkerframework.checker.crypto.CryptoChecker"
+CHECKER="org.checkerframework.checker.linear.LinearChecker"
 STUBFILE="hardwarebacked.astub"
 
 declare -a ARGS
