@@ -1,7 +1,7 @@
 package general;
 
-import org.checkerframework.checker.crypto.qual.EnsureUnique;
-import org.checkerframework.checker.crypto.qual.Unique;
+import org.checkerframework.checker.linear.qual.EnsureUnique;
+import org.checkerframework.checker.linear.qual.Unique;
 
 class EnsureUniqueTest {
     @EnsureUnique(value = "#1", whatever = "algo1")

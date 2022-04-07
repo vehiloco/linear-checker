@@ -1,7 +1,7 @@
 // package general;
 //
-// import org.checkerframework.checker.crypto.qual.RequireUnique;
-// import org.checkerframework.checker.crypto.qual.Unique;
+// import org.checkerframework.checker.linear.qual.RequireUnique;
+// import org.checkerframework.checker.linear.qual.Unique;
 //
 // class RequireUniqueTest {
 //    @RequireUnique(value = "#1", whatever = "algo1")

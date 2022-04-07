@@ -15,6 +15,6 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'crypto-checker'
-include 'crypto-checker-qual'
-include 'crypto-checker-qual-android'
+rootProject.name = 'linear-checker'
+include 'linear-checker-qual'
+include 'linear-checker-qual-android'

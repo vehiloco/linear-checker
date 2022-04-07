@@ -182,17 +182,17 @@ Temporary Items
 .idea/
 demo/.idea/
 
-crypto-checker-qual-android/build/
-crypto-checker-qual-android/.classpath
-crypto-checker-qual-android/.project
-crypto-checker-qual-android/.settings/
-crypto-checker-qual-android/src/
+linear-checker-qual-android/build/
+linear-checker-qual-android/.classpath
+linear-checker-qual-android/.project
+linear-checker-qual-android/.settings/
+linear-checker-qual-android/src/
 
-crypto-checker-qual/build/
-crypto-checker-qual/.classpath
-crypto-checker-qual/.project
-crypto-checker-qual/.settings/
-crypto-checker-qual/src/
+linear-checker-qual/build/
+linear-checker-qual/.classpath
+linear-checker-qual/.project
+linear-checker-qual/.settings/
+linear-checker-qual/src/
 
 tests/build/
 

@@ -1,7 +1,7 @@
 package general;
 
-import org.checkerframework.checker.crypto.qual.Top;
-import org.checkerframework.checker.crypto.qual.Unique;
+import org.checkerframework.checker.linear.qual.Top;
+import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
 
