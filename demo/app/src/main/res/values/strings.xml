@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">demo</string>
+    <string name="input">Input text:</string>
+    <string name="decrypt">Decrypt</string>
+    <string name="encrypt">Encrypt</string>
+    <string name="decrypted">Decrypted text: %s</string>
+    <string name="before_decrypted">Decrypted text:</string>
+    <string name="encrypted">Encrypted text: %s</string>
+    <string name="before_encrypted">Encrypted text:</string>
+</resources>
