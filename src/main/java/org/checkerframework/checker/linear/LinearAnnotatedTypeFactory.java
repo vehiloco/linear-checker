@@ -4,7 +4,6 @@ import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.ExpressionTree;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.util.Elements;
 import org.checkerframework.checker.linear.qual.Any;
@@ -63,7 +62,7 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                 return false;
             } else if (AnnotationUtils.areSameByName(subtype, UNIQUE)
                     && AnnotationUtils.areSameByName(supertype, UNIQUE)) {
-                return compareAllowedAlgorithmOrProviderTypes(subtype, supertype);
+                return true;
             } else {
                 return false;
             }
@@ -77,15 +76,6 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
             return LinearAnnotatedTypeFactory.this.TOP;
-        }
-
-        private boolean compareAllowedAlgorithmOrProviderTypes(
-                final AnnotationMirror subtype, final AnnotationMirror supertype) {
-            List<String> supertypeRegexList =
-                    AnnotationUtils.getElementValueArray(supertype, "value", String.class, true);
-            List<String> subtypeRegexList =
-                    AnnotationUtils.getElementValueArray(subtype, "value", String.class, true);
-            return supertypeRegexList.containsAll(subtypeRegexList);
         }
     }
 
