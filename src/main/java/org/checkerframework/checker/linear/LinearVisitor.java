@@ -6,9 +6,9 @@ import com.sun.source.tree.MethodInvocationTree;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import org.checkerframework.checker.linear.qual.Any;
-import org.checkerframework.checker.linear.qual.Top;
+import org.checkerframework.checker.linear.qual.NonLinear;
 import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.UsedUp;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -22,10 +22,10 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link Any} annotation. */
-    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, Any.class);
-    /** The @{@link Top} annotation. */
-    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, Top.class);
+    /** The @{@link NonLinear} annotation. */
+    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, NonLinear.class);
+    /** The @{@link UsedUp} annotation. */
+    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, UsedUp.class);
 
     public LinearVisitor(final BaseTypeChecker checker) {
         super(checker);
@@ -52,21 +52,4 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         valueType.replaceAnnotation(TOP);
         return super.visitAssignment(node, p);
     }
-
-    //    @Override
-    //    protected void commonAssignmentCheck(
-    //            AnnotatedTypeMirror varType,
-    //            ExpressionTree valueExp,
-    //            @CompilerMessageKey String errorKey,
-    //            Object... extraArgs) {
-    //        // forbid @unique alias here
-    //        AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(valueExp);
-    //        AnnotationMirror valueTypeMirror = valueType.getAnnotation(Unique.class);
-    //        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, UNIQUE))
-    // {
-    //            checker.reportError(valueExp, "unique.alias.not.allowed");
-    //        }
-    //        super.commonAssignmentCheck(varType, valueExp, errorKey, extraArgs);
-    //        return;
-    //    }
 }

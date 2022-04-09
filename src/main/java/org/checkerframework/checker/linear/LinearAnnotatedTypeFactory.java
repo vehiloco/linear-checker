@@ -6,9 +6,9 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.util.Elements;
-import org.checkerframework.checker.linear.qual.Any;
-import org.checkerframework.checker.linear.qual.Top;
+import org.checkerframework.checker.linear.qual.NonLinear;
 import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.UsedUp;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.AnnotatedTypeFactory;
@@ -24,23 +24,16 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link Any} annotation. */
-    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, Any.class);
-    /** The @{@link Top} annotation. */
-    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, Top.class);
+    /** The @{@link NonLinear} annotation. */
+    protected final AnnotationMirror NONLINEAR =
+            AnnotationBuilder.fromClass(elements, NonLinear.class);
+    /** The @{@link UsedUp} annotation. */
+    protected final AnnotationMirror USEDUP = AnnotationBuilder.fromClass(elements, UsedUp.class);
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         this.postInit();
     }
-
-    //    @Override
-    //    public void addComputedTypeAnnotations(Element elt, AnnotatedTypeMirror type) {
-    //        if (!type.isAnnotatedInHierarchy(UNIQUE)) {
-    //            type.replaceAnnotation(TOP);
-    //        }
-    //        super.addComputedTypeAnnotations(elt, type);
-    //    }
 
     @Override
     protected QualifierHierarchy createQualifierHierarchy() {
@@ -62,11 +55,11 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         @Override
         public boolean isSubtype(final AnnotationMirror subtype, final AnnotationMirror supertype) {
-            if (AnnotationUtils.areSameByName(supertype, TOP)
-                    || AnnotationUtils.areSameByName(subtype, ANY)) {
+            if (AnnotationUtils.areSameByName(supertype, USEDUP)
+                    || AnnotationUtils.areSameByName(subtype, UNIQUE)) {
                 return true;
-            } else if (AnnotationUtils.areSameByName(subtype, TOP)
-                    || AnnotationUtils.areSameByName(supertype, ANY)) {
+            } else if (AnnotationUtils.areSameByName(subtype, USEDUP)
+                    || AnnotationUtils.areSameByName(supertype, UNIQUE)) {
                 return false;
             } else if (AnnotationUtils.areSameByName(subtype, UNIQUE)
                     && AnnotationUtils.areSameByName(supertype, UNIQUE)) {
@@ -78,12 +71,12 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         @Override
         public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return LinearAnnotatedTypeFactory.this.ANY;
+            return LinearAnnotatedTypeFactory.this.NONLINEAR;
         }
 
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return LinearAnnotatedTypeFactory.this.TOP;
+            return LinearAnnotatedTypeFactory.this.USEDUP;
         }
     }
 
@@ -107,7 +100,7 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             // replace rhs anno, order and why does not work?
             //            if (valueTypeMirror != null &&
             // AnnotationUtils.areSameByName(valueTypeMirror, UNIQUE)) {
-            valueType.replaceAnnotation(TOP);
+            valueType.replaceAnnotation(USEDUP);
             //            }
             return super.visitAssignment(node, type);
         }
