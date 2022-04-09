@@ -5,11 +5,17 @@ import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
 
-    void test(@NonLinear String x, @Unique String y, @Unique({"algo1", "algo2"}) String z) {
-        @NonLinear String a = x;
+    void test(@NonLinear String x, @Unique String y, @NonLinear String z) {
+        //        @NonLinear String a = x;
         @NonLinear String b;
-        b = y;
-        b = y;
+        // Record result here
+        // 1. first round , (z = y) is rhs, if z is NonLinear and y is unique
+        // then: rhs is unique, lhs b is nonlinear
+        // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
+        // then we let b = (y = z), i think we use a lub here, because rhs is unique
+        b = (y = z);
+
+
         //        @Unique({"algo1", "algo2"})
         //        String e;
         //        e = z;
