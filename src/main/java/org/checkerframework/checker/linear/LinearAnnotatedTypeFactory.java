@@ -1,7 +1,5 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.ExpressionTree;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import javax.lang.model.element.AnnotationMirror;
@@ -11,12 +9,8 @@ import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.checker.linear.qual.UsedUp;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
-import org.checkerframework.framework.type.AnnotatedTypeFactory;
-import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.ElementQualifierHierarchy;
 import org.checkerframework.framework.type.QualifierHierarchy;
-import org.checkerframework.framework.type.treeannotator.ListTreeAnnotator;
-import org.checkerframework.framework.type.treeannotator.TreeAnnotator;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 
@@ -77,32 +71,6 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
             return LinearAnnotatedTypeFactory.this.USEDUP;
-        }
-    }
-
-    @Override
-    protected TreeAnnotator createTreeAnnotator() {
-        return new ListTreeAnnotator(
-                super.createTreeAnnotator(),
-                new LinearAnnotatedTypeFactory.LinearTreeAnnotator(this));
-    }
-
-    private class LinearTreeAnnotator extends TreeAnnotator {
-        public LinearTreeAnnotator(AnnotatedTypeFactory atypeFactory) {
-            super(atypeFactory);
-        }
-
-        @Override
-        public Void visitAssignment(AssignmentTree node, AnnotatedTypeMirror type) {
-            ExpressionTree rhs = node.getExpression();
-            AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(rhs);
-            AnnotationMirror valueTypeMirror = valueType.getAnnotation(Unique.class);
-            // replace rhs anno, order and why does not work?
-            //            if (valueTypeMirror != null &&
-            // AnnotationUtils.areSameByName(valueTypeMirror, UNIQUE)) {
-            valueType.replaceAnnotation(USEDUP);
-            //            }
-            return super.visitAssignment(node, type);
         }
     }
 }
