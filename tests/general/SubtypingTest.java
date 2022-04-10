@@ -14,7 +14,7 @@ class SubtypingTest {
         // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
         // then we let b = (y = z), i think we use a lub here, because rhs is unique
         b = y;
-
+        b = y;
         //        @Unique({"algo1", "algo2"})
         //        String e;
         //        e = z;
