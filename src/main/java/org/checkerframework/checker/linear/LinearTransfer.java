@@ -37,7 +37,6 @@ public class LinearTransfer extends CFTransfer {
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
         newSet.add(newAddedAnno);
         CFValue c = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
-        store.updateForAssignment(lhs, c);
         super.processCommonAssignment(in, lhs, rhs, store, c);
     }
 }
