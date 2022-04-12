@@ -65,7 +65,7 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         @Override
         public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return LinearAnnotatedTypeFactory.this.NONLINEAR;
+            return LinearAnnotatedTypeFactory.this.USEDUP;
         }
 
         @Override
