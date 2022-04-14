@@ -7,13 +7,14 @@ class SubtypingTest {
 
     void test(@NonLinear String x, @Unique String y, @NonLinear String z) {
         //        @NonLinear String a = x;
-        String b;
+        @NonLinear String b;
         // Record result here
         // 1. first round , (z = y) is rhs, if z is NonLinear and y is unique
         // then: rhs is unique, lhs b is nonlinear
         // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
         // then we let b = (y = z)
-        b = (z = y);
+        b = y;
+        b = y;
         //        @Unique({"algo1", "algo2"})
         //        String e;
         //        e = z;

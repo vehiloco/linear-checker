@@ -50,7 +50,6 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         // UNIQUE)) {
         //            checker.reportError(rhs, "unique.alias.not.allowed");
         //        }
-        valueType.replaceAnnotation(TOP);
         return super.visitAssignment(node, p);
     }
 }
