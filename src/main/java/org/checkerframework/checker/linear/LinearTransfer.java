@@ -4,6 +4,7 @@ import com.sun.source.tree.Tree;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.dataflow.analysis.RegularTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
@@ -29,7 +30,7 @@ public class LinearTransfer extends CFTransfer {
         Tree tree = n.getTree();
         CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
 
-        // re-construct an assignment node here.
+        // update rhsVal in store
         AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
         newSet.add(newAddedAnno);
@@ -38,7 +39,8 @@ public class LinearTransfer extends CFTransfer {
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
         store.updateForAssignment(rhs, newRhsValue);
         store = (CFAbstractStore) in.getRegularStore();
-        return super.visitAssignment(n, in);
+        return new RegularTransferResult<CFValue, CFStore>(
+                super.finishValue(newRhsValue, (CFStore) store), (CFStore) store);
     }
 
     //    @Override
