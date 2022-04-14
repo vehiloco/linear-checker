@@ -1,15 +1,18 @@
 package general;
 
-import org.checkerframework.checker.crypto.qual.Top;
-import org.checkerframework.checker.crypto.qual.Unique;
+import org.checkerframework.checker.linear.qual.NonLinear;
+import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
 
-    // Here we just want to test the subtyping rules, normally we should not use
-    // @UnknownAlgorithmOrProvider and @AllowedAlgorithms in this way.
-    void test(@Top String x, @Unique String y, @Unique({"algo1", "algo2"}) String z) {
-        @Top String a = x;
-        @Top String b;
+    void test(@NonLinear String x, @Unique String y, @NonLinear String z) {
+        //        @NonLinear String a = x;
+        @NonLinear String b;
+        // Record result here
+        // 1. first round , (z = y) is rhs, if z is NonLinear and y is unique
+        // then: rhs is unique, lhs b is nonlinear
+        // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
+        // then we let b = (y = z)
         b = y;
         b = y;
         //        @Unique({"algo1", "algo2"})

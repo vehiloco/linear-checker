@@ -1,6 +1,6 @@
 # Crypto Checker
 
-[![Build Status](https://travis-ci.org/vehiloco/crypto-checker.svg?branch=master)](https://travis-ci.org/vehiloco/crypto-checker)
+[![Build Status](https://travis-ci.org/vehiloco/linear-checker.svg?branch=master)](https://travis-ci.org/vehiloco/linear-checker)
 
 The Crypto Checker is a pluggable type system built on the [Checker Framework](https://checkerframework.org/).
 It can help you find whether there are any weak or unsupported crypto algorithms and the unsupported
@@ -13,7 +13,7 @@ code style.
 
 For more details see this pre-print of the FTfJP 2021 paper
 [Ensuring Correct Cryptographic Algorithm and Provider Usage at Compile
-Time](2021-06-04-Crypto-Checker-FTfJP-2021-preprint.pdf).
+Time](2021-06-04-linear-checker-FTfJP-2021-preprint.pdf).
 
 
 ## The Crypto Checker annotations
@@ -101,7 +101,7 @@ here we provide a quick start with `javac` command.
 ```bash
 ./gradlew assemble copyDependencies
 
-javac -cp ./build/libs/checker.jar:./build/libs/crypto-checker.jar -processor org.checkerframework.checker.crypto.CryptoChecker \
+javac -cp ./build/libs/checker.jar:./build/libs/linear-checker.jar -processor org.checkerframework.checker.crypto.CryptoChecker \
 -Astubs="cipher.astub" tests/cipher/CipherTest.java
 ```
 
@@ -109,7 +109,7 @@ For the users who have installed the [Checker Framework](https://checkerframewor
 
 ```bash
 ./gradlew assemble
-javacheck -cp ./build/libs/crypto-checker.jar -processor org.checkerframework.checker.crypto.CryptoChecker \
+javacheck -cp ./build/libs/linear-checker.jar -processor org.checkerframework.checker.crypto.CryptoChecker \
 -Astubs="cipher.astub" tests/cipher/CipherTest.java
 ```
 

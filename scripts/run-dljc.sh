@@ -10,7 +10,7 @@ export CRYPTOCHECKER=$(cd $(dirname "$0")/../ && pwd)
 
 # Dependencies
 export CLASSPATH=${CRYPTOCHECKER}/build/classes/java/main:${CRYPTOCHECKER}/build/resources/main:\
-${CRYPTOCHECKER}/build/libs/crypto-checker.jar
+${CRYPTOCHECKER}/build/libs/linear-checker.jar
 
 DLJC=${JSR308}/do-like-javac
 CHECKER="org.checkerframework.checker.crypto.CryptoChecker"

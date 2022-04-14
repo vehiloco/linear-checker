@@ -23,7 +23,7 @@ ext.versions = [
 ]
 
 sourceCompatibility = 1.8
-def checkerframework_local = false  // Set this variable to [true] while using local version of checker framework.
+def checkerframework_local = true  // Set this variable to [true] while using local version of checker framework.
 def CHECKERFRAMEWORK = System.getenv("CHECKERFRAMEWORK")
 
 dependencies {
@@ -34,7 +34,7 @@ dependencies {
 		}
 		implementation files("${CHECKERFRAMEWORK}/checker/dist/checker-qual.jar")
 		localDeps files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
-		implementation files("${CHECKERFRAMEWORK}/checker/dist/jdk8.jar")
+		implementation files("${CHECKERFRAMEWORK}/checker/dist/javac.jar")
 	} else {
 		localDeps "org.checkerframework:checker:${versions.checkerFramework}"
 		localDeps "org.checkerframework:checker-qual:${versions.checkerFramework}"
@@ -96,7 +96,7 @@ publishing {
 	publications {
 		maven(MavenPublication) {
 			groupId = "org.checkerframework"
-			artifactId = "crypto-checker"
+			artifactId = "linear-checker"
 			version = "0.1-SNAPSHOT"
 			from components.java
 			if (checkerframework_local) {

@@ -10,11 +10,11 @@ export CRYPTOCHECKER=$(cd $(dirname "$0")/../ && pwd)
 
 # Dependencies
 export CLASSPATH=${CRYPTOCHECKER}/build/classes/java/main:${CRYPTOCHECKER}/build/resources/main:\
-${CRYPTOCHECKER}/build/libs/crypto-checker.jar
+${CRYPTOCHECKER}/build/libs/linear-checker.jar
 
 # Command
 DEBUG=""
-CHECKER="org.checkerframework.checker.crypto.CryptoChecker"
+CHECKER="org.checkerframework.checker.linear.LinearChecker"
 STUBFILE="hardwarebacked.astub"
 
 declare -a ARGS
