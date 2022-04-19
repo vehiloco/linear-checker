@@ -8,6 +8,7 @@ import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.Node;
+import org.checkerframework.dataflow.expression.JavaExpression;
 import org.checkerframework.framework.flow.*;
 import org.checkerframework.javacutil.AnnotationUtils;
 
@@ -38,8 +39,15 @@ public class LinearTransfer extends CFTransfer {
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
         // use store insert value instead. just like nullnesstransfer.
         store.updateForAssignment(rhs, newRhsValue);
-        return new RegularTransferResult<CFValue, CFStore>(
-                super.finishValue(newRhsValue, (CFStore) store), (CFStore) store);
+        JavaExpression internalRepr = JavaExpression.fromNode(rhs);
+        store.insertValue(internalRepr, newAddedAnno);
+        System.out.println("============================= Regular Store!!!");
+        System.out.println(store.toString());
+        TransferResult newTResult =
+                new RegularTransferResult<CFValue, CFStore>(
+                        super.finishValue(newRhsValue, (CFStore) store), (CFStore) store);
+        newTResult.setResultValue(newRhsValue);
+        return newTResult;
     }
 
     //    @Override
