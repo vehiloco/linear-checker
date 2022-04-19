@@ -41,10 +41,12 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     @Override
     public Void visitAssignment(AssignmentTree node, Void p) {
         // Forbid usage or give it a new anno;
+
         ExpressionTree lhs = node.getVariable();
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
+        System.out.println(valueType.toString());
         AnnotationMirror valueTypeMirror = valueType.getAnnotation(Unique.class);
         //        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror,
         // UNIQUE)) {

@@ -1,6 +1,5 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.Tree;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -25,20 +24,20 @@ public class LinearTransfer extends CFTransfer {
     @Override
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
-        Node lhs = n.getTarget();
+        System.out.println("============================= Transfer function!!!");
         Node rhs = n.getExpression();
-        Tree tree = n.getTree();
         CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
-
-        // update rhsVal in store
+        System.out.println(rhsValue.toString());
+        System.out.println("============================= TransferInput function!!!");
+        System.out.println(in.toString());
+        // create a new cfvalue and put it into the store.
         AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
         newSet.add(newAddedAnno);
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
-
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
+        // use store insert value instead. just like nullnesstransfer.
         store.updateForAssignment(rhs, newRhsValue);
-        store = (CFAbstractStore) in.getRegularStore();
         return new RegularTransferResult<CFValue, CFStore>(
                 super.finishValue(newRhsValue, (CFStore) store), (CFStore) store);
     }
