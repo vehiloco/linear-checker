@@ -16,10 +16,10 @@ class SubtypingTest {
         b = y;
         b = y;
         //        @Unique({"algo1", "algo2"})
-        //        String e;
-        //        e = z;
+        @NonLinear String e;
+        e = z;
         //        MyClass m1 = new MyClass();
-        //        testInvocation(e);
+        testInvocation(e);
     }
 
     //    void test2() {
@@ -29,10 +29,10 @@ class SubtypingTest {
     //        test(x, y, z);
     //    }
 
-    //    void testInvocation(@Top String x) {
-    //        String y;
-    //        y = x;
-    //    }
+    void testInvocation(@NonLinear String x) {
+        String y;
+        y = x;
+    }
 
     //    private static class MyClass {
     //        void a(@Top String x) {

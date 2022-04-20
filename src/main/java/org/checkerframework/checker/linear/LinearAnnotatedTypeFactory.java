@@ -2,7 +2,9 @@ package org.checkerframework.checker.linear;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import org.checkerframework.checker.linear.qual.NonLinear;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -13,8 +15,11 @@ import org.checkerframework.framework.type.ElementQualifierHierarchy;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.TreeUtils;
 
 public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
+
+    protected final ProcessingEnvironment env;
 
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
@@ -24,9 +29,18 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     /** The @{@link UsedUp} annotation. */
     protected final AnnotationMirror USEDUP = AnnotationBuilder.fromClass(elements, UsedUp.class);
 
+    /** The {@link Unique#value} element/argument. */
+    protected final ExecutableElement uniqueValueElement;
+
+    /** The {@link UsedUp#value} element/argument. */
+    protected final ExecutableElement usedUpValueElement;
+
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);
         this.postInit();
+        env = checker.getProcessingEnvironment();
+        uniqueValueElement = TreeUtils.getMethod(Unique.class, "value", 0, env);
+        usedUpValueElement = TreeUtils.getMethod(UsedUp.class, "value", 0, env);
     }
 
     @Override
@@ -59,7 +73,7 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
                     && AnnotationUtils.areSameByName(supertype, UNIQUE)) {
                 return true;
             } else {
-                return false;
+                return true;
             }
         }
 
