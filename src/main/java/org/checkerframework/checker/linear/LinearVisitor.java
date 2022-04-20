@@ -6,6 +6,7 @@ import com.sun.source.tree.MethodInvocationTree;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import org.checkerframework.checker.linear.qual.NonLinear;
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.checker.linear.qual.UsedUp;
@@ -13,6 +14,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.TreeUtils;
 
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
@@ -23,18 +25,34 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
     /** The @{@link NonLinear} annotation. */
-    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, NonLinear.class);
+    protected final AnnotationMirror NONLINEAR =
+            AnnotationBuilder.fromClass(elements, NonLinear.class);
     /** The @{@link UsedUp} annotation. */
-    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, UsedUp.class);
+    protected final AnnotationMirror USEDUP = AnnotationBuilder.fromClass(elements, UsedUp.class);
+
+    /** The {@link Unique#value} element/argument. */
+    protected final ExecutableElement uniqueValueElement;
+
+    /** The {@link UsedUp#value} element/argument. */
+    protected final ExecutableElement usedUpValueElement;
 
     public LinearVisitor(final BaseTypeChecker checker) {
         super(checker);
         env = checker.getProcessingEnvironment();
+        uniqueValueElement = TreeUtils.getMethod(Unique.class, "value", 0, env);
+        usedUpValueElement = TreeUtils.getMethod(UsedUp.class, "value", 0, env);
     }
 
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        List<? extends ExpressionTree> valueExp = node.getArguments();
+        List<? extends ExpressionTree> valueExpList = node.getArguments();
+        if (valueExpList.size() > 0) {
+            ExpressionTree valueExp = valueExpList.get(0);
+            System.out.println("------------------------- VISITOR --------------");
+            AnnotatedTypeMirror atm = atypeFactory.getAnnotatedType(valueExp);
+            AnnotationMirror eAM = atm.getAnnotation(NonLinear.class);
+            System.out.println(eAM.toString());
+        }
         return super.visitMethodInvocation(node, p);
     }
 
@@ -46,7 +64,6 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
-        System.out.println(valueType.toString());
         AnnotationMirror valueTypeMirror = valueType.getAnnotation(Unique.class);
         //        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror,
         // UNIQUE)) {

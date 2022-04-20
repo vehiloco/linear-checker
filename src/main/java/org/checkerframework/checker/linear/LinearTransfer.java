@@ -63,9 +63,6 @@ public class LinearTransfer extends CFTransfer {
                     AnnotationMirror newAnno = builder.build();
                     store.insertValue(arg, newAnno);
                 }
-
-                // only for test
-                System.out.println(store.toString());
             }
         }
         System.out.println(store.toString());

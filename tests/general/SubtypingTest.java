@@ -13,12 +13,13 @@ class SubtypingTest {
         // then: rhs is unique, lhs b is nonlinear
         // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
         // then we let b = (y = z)
-        b = y;
-        b = y;
+        //        b = y;
+        //        b = y;
         //        @Unique({"algo1", "algo2"})
         @NonLinear String e;
         e = z;
         //        MyClass m1 = new MyClass();
+        testInvocation(e);
         testInvocation(e);
     }
 
