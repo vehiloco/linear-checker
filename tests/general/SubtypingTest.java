@@ -6,20 +6,11 @@ import org.checkerframework.checker.linear.qual.Unique;
 class SubtypingTest {
 
     void test(@NonLinear String x, @Unique String y, @NonLinear String z) {
-        //        @NonLinear String a = x;
         @NonLinear String b;
-        // Record result here
-        // 1. first round , (z = y) is rhs, if z is NonLinear and y is unique
-        // then: rhs is unique, lhs b is nonlinear
-        // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
-        // then we let b = (y = z)
         // :: error: unique.assignment.not.allowed
         b = y;
-        //        @Unique({"algo1", "algo2"})
-        //        String e;
-        //        e = z;
-        //        MyClass m1 = new MyClass();
-        //        testInvocation(e);
+        // test method invocation
+        testInvocation(y);
     }
 
     //    void test2() {
@@ -29,10 +20,10 @@ class SubtypingTest {
     //        test(x, y, z);
     //    }
 
-    //    void testInvocation(@Top String x) {
-    //        String y;
-    //        y = x;
-    //    }
+    void testInvocation(String x) {
+        x = "a";
+        return;
+    }
 
     //    private static class MyClass {
     //        void a(@Top String x) {

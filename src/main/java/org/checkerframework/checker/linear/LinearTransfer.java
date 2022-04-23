@@ -3,7 +3,6 @@ package org.checkerframework.checker.linear;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.dataflow.analysis.RegularTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
@@ -24,6 +23,7 @@ public class LinearTransfer extends CFTransfer {
     @Override
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
+        TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         System.out.println("============================= Transfer function!!!");
         Node rhs = n.getExpression();
         CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
@@ -37,9 +37,8 @@ public class LinearTransfer extends CFTransfer {
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
         // use store insert value instead. just like nullnesstransfer.
-        store.updateForAssignment(rhs, newRhsValue);
-        return new RegularTransferResult<CFValue, CFStore>(
-                super.finishValue(newRhsValue, (CFStore) store), (CFStore) store);
+        //        store.updateForAssignment(rhs, newRhsValue);
+        return superResult;
     }
 
     //    @Override
