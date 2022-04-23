@@ -13,6 +13,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
@@ -40,18 +41,14 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     @Override
     public Void visitAssignment(AssignmentTree node, Void p) {
-        // Forbid usage or give it a new anno;
-
         ExpressionTree lhs = node.getVariable();
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
-        System.out.println(valueType.toString());
         AnnotationMirror valueTypeMirror = valueType.getAnnotation(Unique.class);
-        //        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror,
-        // UNIQUE)) {
-        //            checker.reportError(rhs, "unique.alias.not.allowed");
-        //        }
+        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, UNIQUE)) {
+            checker.reportError(rhs, "unique.assignment.not.allowed");
+        }
         return super.visitAssignment(node, p);
     }
 }

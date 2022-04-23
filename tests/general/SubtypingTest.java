@@ -13,7 +13,7 @@ class SubtypingTest {
         // then: rhs is unique, lhs b is nonlinear
         // 2. next, z = y, lhs @Nonlinear z, rhs y is @unique
         // then we let b = (y = z)
-        b = y;
+        // :: error: unique.assignment.not.allowed
         b = y;
         //        @Unique({"algo1", "algo2"})
         //        String e;
