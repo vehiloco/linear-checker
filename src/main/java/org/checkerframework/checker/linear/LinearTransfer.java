@@ -37,7 +37,7 @@ public class LinearTransfer extends CFTransfer {
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
         // use store insert value instead. just like nullnesstransfer.
-        //        store.updateForAssignment(rhs, newRhsValue);
+        store.updateForAssignment(rhs, newRhsValue);
         return superResult;
     }
 

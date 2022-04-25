@@ -9,8 +9,10 @@ class SubtypingTest {
         @NonLinear String b;
         // :: error: unique.assignment.not.allowed
         b = y;
+        // :: error: unique.assignment.not.allowed
+        b = y;
         // test method invocation
-        testInvocation(y);
+        //        testInvocation(y);
     }
 
     //    void test2() {
@@ -20,15 +22,13 @@ class SubtypingTest {
     //        test(x, y, z);
     //    }
 
-    void testInvocation(String x) {
-        x = "a";
-        return;
-    }
+    //    void testInvocation(String x) {
+    //        x = "a";
+    //        return;
+    //    }
 
     //    private static class MyClass {
-    //        void a(@Top String x) {
-    //            String y;
-    //            y = x;
-    //        }
+    //        //According to the type rules, should report an error here.
+    //        @Unique x;
     //    }
 }
