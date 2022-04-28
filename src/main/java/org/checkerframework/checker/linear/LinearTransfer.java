@@ -6,6 +6,7 @@ import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
+import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.*;
 import org.checkerframework.javacutil.AnnotationUtils;
@@ -38,6 +39,22 @@ public class LinearTransfer extends CFTransfer {
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
         // use store insert value instead. just like nullnesstransfer.
         store.updateForAssignment(rhs, newRhsValue);
+        superResult.setResultValue(newRhsValue);
+        return superResult;
+    }
+
+    @Override
+    public TransferResult<CFValue, CFStore> visitLocalVariable(
+            LocalVariableNode n, TransferInput<CFValue, CFStore> in) {
+        TransferResult<CFValue, CFStore> superResult = super.visitLocalVariable(n, in);
+        CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
+        CFValue oldValue = (CFValue) store.getValue(n);
+        AnnotationMirror newAddedAnno = this.atypeFactory.NONLINEAR;
+        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
+        newSet.add(newAddedAnno);
+        CFValue newValue = analysis.createAbstractValue(newSet, oldValue.getUnderlyingType());
+        store.updateForAssignment(n, newValue);
+        superResult.setResultValue(newValue);
         return superResult;
     }
 
