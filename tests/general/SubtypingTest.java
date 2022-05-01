@@ -1,13 +1,12 @@
 package general;
 
-import org.checkerframework.checker.linear.qual.NonLinear;
+import org.checkerframework.checker.linear.qual.MayAliased;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.checker.linear.qual.UsedUp;
 
 class SubtypingTest {
 
-    void test(@NonLinear String x, @Unique String y, @UsedUp String z) {
-        @NonLinear String b;
+    void test(@MayAliased String x, @Unique String y, @MayAliased String z) {
+        @Unique String b;
         // Postcondition y is usedup
         b = y;
         b = y;

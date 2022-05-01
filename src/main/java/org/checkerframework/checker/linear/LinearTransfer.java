@@ -1,8 +1,9 @@
 package org.checkerframework.checker.linear;
 
+import java.util.Iterator;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
-import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
@@ -14,9 +15,7 @@ public class LinearTransfer extends CFTransfer {
 
     private final LinearAnnotatedTypeFactory atypeFactory;
 
-    private boolean isRhs = false;
-
-    /** The @{@link Unique} annotation. */
+    /** The @{@link Disappear} annotation. */
     public LinearTransfer(CFAnalysis analysis) {
         super(analysis);
         this.atypeFactory = (LinearAnnotatedTypeFactory) analysis.getTypeFactory();
@@ -27,21 +26,22 @@ public class LinearTransfer extends CFTransfer {
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         Node rhs = n.getExpression();
-
-        // TODO
-        boolean prevIsRhs = isRhs;
-        isRhs = true;
         CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
-        isRhs = prevIsRhs;
-        // create a new cfvalue and put it into the store.
-        AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
-        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-        newSet.add(newAddedAnno);
-        CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+        Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
+        Iterator<AnnotationMirror> it = rhsAnnotations.iterator();
         CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
-        // use store insert value instead. just like nullnesstransfer.
-        store.updateForAssignment(rhs, newRhsValue);
-        superResult.setResultValue(newRhsValue);
+        while (it.hasNext()) {
+            System.out.println("-----------------Visit Assignment-----------");
+            if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, it.next())) {
+                AnnotationMirror newAddedAnno = this.atypeFactory.DISAPPEAR;
+                Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
+                newSet.add(newAddedAnno);
+                CFValue newRhsValue =
+                        analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+                store.updateForAssignment(rhs, newRhsValue);
+                superResult.setResultValue(newRhsValue);
+            }
+        }
         return superResult;
     }
 

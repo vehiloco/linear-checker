@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.PostconditionAnnotation;
 import org.checkerframework.framework.qual.QualifierArgument;
 
-@PostconditionAnnotation(qualifier = Unique.class)
+@PostconditionAnnotation(qualifier = Disappear.class)
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface EnsureUnique {
     String[] value();

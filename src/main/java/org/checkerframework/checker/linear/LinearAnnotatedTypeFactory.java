@@ -3,9 +3,9 @@ package org.checkerframework.checker.linear;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import javax.lang.model.element.AnnotationMirror;
-import org.checkerframework.checker.linear.qual.NonLinear;
+import org.checkerframework.checker.linear.qual.Disappear;
+import org.checkerframework.checker.linear.qual.MayAliased;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.checker.linear.qual.UsedUp;
 import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.type.SubtypeIsSubsetQualifierHierarchy;
@@ -13,13 +13,14 @@ import org.checkerframework.javacutil.AnnotationBuilder;
 
 public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
+    /** The @{@link Disappear} annotation. */
+    protected final AnnotationMirror DISAPPEAR =
+            AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link NonLinear} annotation. */
-    protected final AnnotationMirror NONLINEAR =
-            AnnotationBuilder.fromClass(elements, NonLinear.class);
-    /** The @{@link UsedUp} annotation. */
-    protected final AnnotationMirror USEDUP = AnnotationBuilder.fromClass(elements, UsedUp.class);
+    /** The @{@link MayAliased} annotation. */
+    protected final AnnotationMirror MAYALIASED =
+            AnnotationBuilder.fromClass(elements, MayAliased.class);
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker);

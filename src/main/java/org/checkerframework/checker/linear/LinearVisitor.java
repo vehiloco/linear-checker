@@ -6,9 +6,9 @@ import com.sun.source.tree.MethodInvocationTree;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import org.checkerframework.checker.linear.qual.NonLinear;
+import org.checkerframework.checker.linear.qual.Disappear;
+import org.checkerframework.checker.linear.qual.MayAliased;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.checker.linear.qual.UsedUp;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
@@ -20,12 +20,13 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     final ProcessingEnvironment env;
 
+    /** The @{@link Disappear} annotation. */
+    protected final AnnotationMirror UNIQUE =
+            AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
-    protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link NonLinear} annotation. */
-    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, NonLinear.class);
-    /** The @{@link UsedUp} annotation. */
-    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, UsedUp.class);
+    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, Unique.class);
+    /** The @{@link MayAliased} annotation. */
+    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, MayAliased.class);
 
     public LinearVisitor(final BaseTypeChecker checker) {
         super(checker);
@@ -45,7 +46,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(node);
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
-        AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Unique.class);
+        AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
         System.out.println("-----------Visitor----------------");
         System.out.println(valueType.toString());
         System.out.println(rhsValueType.toString());

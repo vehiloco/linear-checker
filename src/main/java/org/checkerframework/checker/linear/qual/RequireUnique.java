@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.PreconditionAnnotation;
 import org.checkerframework.framework.qual.QualifierArgument;
 
-@PreconditionAnnotation(qualifier = Unique.class)
+@PreconditionAnnotation(qualifier = Disappear.class)
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface RequireUnique {
     String[] value();
