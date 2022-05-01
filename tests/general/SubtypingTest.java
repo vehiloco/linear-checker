@@ -8,13 +8,11 @@ class SubtypingTest {
 
     void test(@NonLinear String x, @Unique String y, @UsedUp String z) {
         @NonLinear String b;
-        // :: error: assignment.type.incompatible
+        // Postcondition y is usedup
         b = y;
-        // :: error: assignment.type.incompatible
         b = y;
         // test method invocation
         //        testInvocation(y);
-
     }
 
     //    @Unique String id(@Unique -> @Top String x) {
@@ -39,10 +37,5 @@ class SubtypingTest {
     //    void testInvocation(String x) {
     //        x = "a";
     //        return;
-    //    }
-
-    //    private static class MyClass {
-    //        //According to the type rules, should report an error here.
-    //        @Unique x;
     //    }
 }

@@ -6,7 +6,6 @@ import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
-import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.*;
 import org.checkerframework.javacutil.AnnotationUtils;
@@ -14,6 +13,8 @@ import org.checkerframework.javacutil.AnnotationUtils;
 public class LinearTransfer extends CFTransfer {
 
     private final LinearAnnotatedTypeFactory atypeFactory;
+
+    private boolean isRhs = false;
 
     /** The @{@link Unique} annotation. */
     public LinearTransfer(CFAnalysis analysis) {
@@ -25,12 +26,13 @@ public class LinearTransfer extends CFTransfer {
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
-        System.out.println("============================= Transfer function!!!");
         Node rhs = n.getExpression();
+
+        // TODO
+        boolean prevIsRhs = isRhs;
+        isRhs = true;
         CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
-        System.out.println(rhsValue.toString());
-        System.out.println("============================= TransferInput function!!!");
-        System.out.println(in.toString());
+        isRhs = prevIsRhs;
         // create a new cfvalue and put it into the store.
         AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
@@ -43,20 +45,32 @@ public class LinearTransfer extends CFTransfer {
         return superResult;
     }
 
-    @Override
-    public TransferResult<CFValue, CFStore> visitLocalVariable(
-            LocalVariableNode n, TransferInput<CFValue, CFStore> in) {
-        TransferResult<CFValue, CFStore> superResult = super.visitLocalVariable(n, in);
-        CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
-        CFValue oldValue = (CFValue) store.getValue(n);
-        AnnotationMirror newAddedAnno = this.atypeFactory.NONLINEAR;
-        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-        newSet.add(newAddedAnno);
-        CFValue newValue = analysis.createAbstractValue(newSet, oldValue.getUnderlyingType());
-        store.updateForAssignment(n, newValue);
-        superResult.setResultValue(newValue);
-        return superResult;
-    }
+    //    @Override
+    //    public TransferResult<CFValue, CFStore> visitLocalVariable(
+    //            LocalVariableNode n, TransferInput<CFValue, CFStore> in) {
+    //        //        System.out.println("---------------------Start Linear Transfer
+    //        // visitLocalVariable");
+    //        //        System.out.println(n.toStringDebug());
+    //        //        System.out.println(n.getReceiver());
+    //        //        System.out.println(n.isLValue());
+    //        //        System.out.println(n.getTree().getKind());
+    //        TransferResult<CFValue, CFStore> superResult = super.visitLocalVariable(n, in);
+    //        // When visitMethodInvocation, things are different.
+    //        if (isRhs) {
+    //            CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
+    //            CFValue oldValue = (CFValue) store.getValue(n);
+    //            System.out.println(oldValue.toStringFullyQualified());
+    //            AnnotationMirror newAddedAnno = this.atypeFactory.UNIQUE;
+    //            Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
+    //            newSet.add(newAddedAnno);
+    //            CFValue newValue = analysis.createAbstractValue(newSet,
+    // oldValue.getUnderlyingType());
+    //            store.updateForAssignment(n, newValue);
+    //            superResult.setResultValue(newValue);
+    //            System.out.println("---------------------End Linear Transfer visitLocalVariable");
+    //        }
+    //        return superResult;
+    //    }
 
     //    @Override
     //    public void processCommonAssignment(
