@@ -13,6 +13,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
@@ -21,12 +22,13 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     final ProcessingEnvironment env;
 
     /** The @{@link Disappear} annotation. */
-    protected final AnnotationMirror UNIQUE =
+    protected final AnnotationMirror DISAPPEAR =
             AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
-    protected final AnnotationMirror ANY = AnnotationBuilder.fromClass(elements, Unique.class);
+    protected final AnnotationMirror UNIQUUE = AnnotationBuilder.fromClass(elements, Unique.class);
     /** The @{@link MayAliased} annotation. */
-    protected final AnnotationMirror TOP = AnnotationBuilder.fromClass(elements, MayAliased.class);
+    protected final AnnotationMirror MAYALIASED =
+            AnnotationBuilder.fromClass(elements, MayAliased.class);
 
     public LinearVisitor(final BaseTypeChecker checker) {
         super(checker);
@@ -43,18 +45,14 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     public Void visitAssignment(AssignmentTree node, Void p) {
         ExpressionTree lhs = node.getVariable();
         ExpressionTree rhs = node.getExpression();
-        AnnotatedTypeMirror valueType = atypeFactory.getAnnotatedType(node);
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
         AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
         System.out.println("-----------Visitor----------------");
-        System.out.println(valueType.toString());
-        System.out.println(rhsValueType.toString());
-        System.out.println(lhsValueType.toString());
-        //        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror,
-        // UNIQUE)) {
-        //            checker.reportError(rhs, "unique.assignment.not.allowed");
-        //        }
+        System.out.println("The RHS y is now: " + rhsValueType.toString());
+        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, DISAPPEAR)) {
+            checker.reportError(rhs, "unique.assignment.not.allowed");
+        }
         return super.visitAssignment(node, p);
     }
 }

@@ -7,8 +7,8 @@ class SubtypingTest {
 
     void test(@MayAliased String x, @Unique String y, @MayAliased String z) {
         @Unique String b;
-        // Postcondition y is usedup
         b = y;
+        // ::error: unique.assignment.not.allowed
         b = y;
         // test method invocation
         //        testInvocation(y);

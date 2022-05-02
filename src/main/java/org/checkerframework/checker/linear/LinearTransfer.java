@@ -1,14 +1,18 @@
 package org.checkerframework.checker.linear;
 
+import com.sun.source.tree.ExpressionTree;
 import java.util.Iterator;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Disappear;
+import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
+import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.*;
+import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearTransfer extends CFTransfer {
@@ -26,20 +30,30 @@ public class LinearTransfer extends CFTransfer {
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         Node rhs = n.getExpression();
-        CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
+        if (!(rhs instanceof LocalVariableNode)) {
+            return superResult;
+        }
+        ExpressionTree valueExp = (ExpressionTree) rhs.getTree();
+        AnnotatedTypeMirror valueType = this.atypeFactory.getAnnotatedType(valueExp);
+        AnnotationMirror rhsUnique = valueType.getAnnotation(Unique.class);
+        AnnotationMirror rhsDisappear = valueType.getAnnotation(Disappear.class);
+        CFValue rhsValue = in.getValueOfSubNode(rhs);
         Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
         Iterator<AnnotationMirror> it = rhsAnnotations.iterator();
-        CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
-        while (it.hasNext()) {
-            System.out.println("-----------------Visit Assignment-----------");
-            if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, it.next())) {
-                AnnotationMirror newAddedAnno = this.atypeFactory.DISAPPEAR;
-                Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-                newSet.add(newAddedAnno);
-                CFValue newRhsValue =
-                        analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+        CFAbstractStore store = in.getRegularStore();
+        AnnotationMirror newAddedAnno = this.atypeFactory.DISAPPEAR;
+        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
+        newSet.add(newAddedAnno);
+        CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+        for (AnnotationMirror annoMirror : rhsAnnotations) {
+            if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, annoMirror)) {
                 store.updateForAssignment(rhs, newRhsValue);
+                break;
+            }
+
+            if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
                 superResult.setResultValue(newRhsValue);
+                break;
             }
         }
         return superResult;
