@@ -15,13 +15,13 @@ import org.checkerframework.framework.flow.*;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationUtils;
 
-public class LinearTransfer extends CFTransfer {
+public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 
     private final LinearAnnotatedTypeFactory atypeFactory;
 
     /** The @{@link Disappear} annotation. */
-    public LinearTransfer(CFAnalysis analysis) {
-        super(analysis);
+    public LinearTransfer(LinearAnalysis analysis) {
+        super(analysis, true);
         this.atypeFactory = (LinearAnnotatedTypeFactory) analysis.getTypeFactory();
     }
 

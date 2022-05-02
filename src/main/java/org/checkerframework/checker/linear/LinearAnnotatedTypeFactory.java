@@ -6,12 +6,15 @@ import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.MayAliased;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
+import org.checkerframework.framework.flow.CFStore;
+import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.type.SubtypeIsSubsetQualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 
-public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
+public class LinearAnnotatedTypeFactory
+        extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
 
     /** The @{@link Disappear} annotation. */
     protected final AnnotationMirror DISAPPEAR =
@@ -23,7 +26,7 @@ public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
             AnnotationBuilder.fromClass(elements, MayAliased.class);
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
-        super(checker);
+        super(checker, true);
         this.postInit();
     }
 
