@@ -37,19 +37,30 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        List<? extends ExpressionTree> valueExp = node.getArguments();
+        List<? extends ExpressionTree> args = node.getArguments();
+        // Prevent @Disappear being used as a parameter
+        for (int i = 0; i < args.size(); i++) {
+            AnnotatedTypeMirror argTypeMirror = atypeFactory.getAnnotatedType(args.get(i));
+            AnnotationMirror argAnnotationMirror = argTypeMirror.getAnnotation(Disappear.class);
+            if (argAnnotationMirror != null
+                    && AnnotationUtils.areSameByName(argAnnotationMirror, DISAPPEAR)) {
+                checker.reportError(args.get(i), "unique.parameter.not.allowed");
+            }
+        }
         return super.visitMethodInvocation(node, p);
     }
 
     @Override
     public Void visitAssignment(AssignmentTree node, Void p) {
+        System.out.println("-----------Visitor----------------");
         ExpressionTree lhs = node.getVariable();
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
         AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
-        System.out.println("-----------Visitor----------------");
-        System.out.println("The RHS y is now: " + rhsValueType.toString());
+        System.out.println("lhs is: " + lhs.toString());
+        System.out.println("rhs is: " + rhs.toString());
+        System.out.println("The RHS type is now: " + rhsValueType.toString());
         if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, DISAPPEAR)) {
             checker.reportError(rhs, "unique.assignment.not.allowed");
         }

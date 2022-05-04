@@ -10,8 +10,8 @@ class SubtypingTest {
         b = y;
         // ::error: unique.assignment.not.allowed
         b = y;
-        // test method invocation
-        //        testInvocation(y);
+        // ::error: unique.parameter.not.allowed
+        testInvocation(y);
     }
 
     //    @Unique String id(@Unique -> @Top String x) {
@@ -33,8 +33,9 @@ class SubtypingTest {
     //        test(x, y, z);
     //    }
 
-    //    void testInvocation(String x) {
-    //        x = "a";
-    //        return;
-    //    }
+    void testInvocation(String x) {
+        String b;
+        b = x;
+        return;
+    }
 }
