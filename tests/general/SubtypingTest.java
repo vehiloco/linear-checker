@@ -12,6 +12,8 @@ class SubtypingTest {
         b = y;
         // ::error: unique.parameter.not.allowed
         testInvocation(y);
+        // ::error: unique.assignment.not.allowed
+        b = y;
     }
 
     //    @Unique String id(@Unique -> @Top String x) {
