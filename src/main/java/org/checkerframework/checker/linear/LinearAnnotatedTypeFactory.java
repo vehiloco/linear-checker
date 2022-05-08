@@ -10,6 +10,7 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFValue;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
+import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.framework.type.SubtypeIsSubsetQualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 
@@ -28,6 +29,11 @@ public class LinearAnnotatedTypeFactory
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker, true);
         this.postInit();
+    }
+
+    @Override
+    protected QualifierHierarchy createQualifierHierarchy() {
+        return new LinearQualifierHierarchy(getSupportedTypeQualifiers());
     }
 
     private final class LinearQualifierHierarchy extends SubtypeIsSubsetQualifierHierarchy {

@@ -5,8 +5,9 @@ import java.lang.annotation.Target;
 import org.checkerframework.framework.qual.PostconditionAnnotation;
 import org.checkerframework.framework.qual.QualifierArgument;
 
-@PostconditionAnnotation(qualifier = Disappear.class)
+@PostconditionAnnotation(qualifier = Unique.class)
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+// Range of value could also work, for example, int value
 public @interface EnsureUnique {
     String[] value();
 
