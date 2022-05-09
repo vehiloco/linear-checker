@@ -12,7 +12,7 @@ import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFValue;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.type.QualifierHierarchy;
-import org.checkerframework.framework.type.SubtypeIsSubsetQualifierHierarchy;
+import org.checkerframework.framework.type.SubtypeIsSupersetQualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.TreeUtils;
 
@@ -41,7 +41,8 @@ public class LinearAnnotatedTypeFactory
         return new LinearQualifierHierarchy(getSupportedTypeQualifiers());
     }
 
-    private final class LinearQualifierHierarchy extends SubtypeIsSubsetQualifierHierarchy {
+    // SubtypeIsSubsetQualifierHierarchy
+    private final class LinearQualifierHierarchy extends SubtypeIsSupersetQualifierHierarchy {
 
         /**
          * Creates a CryptoQualifierHierarchy from the given classes.

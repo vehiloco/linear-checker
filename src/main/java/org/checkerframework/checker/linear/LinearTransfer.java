@@ -52,21 +52,18 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                     AnnotationUtils.getElementValueArray(
                                             anno, this.atypeFactory.uniqueElements, String.class);
                             AnnotationBuilder builder = new AnnotationBuilder(env, Unique.class);
-                            builder.setValue("value", new String[] {"a", "initialized"});
+                            builder.setValue("value", new String[] {"initialized"});
                             AnnotationMirror newAnno = builder.build();
                             JavaExpression param = JavaExpression.fromNode(arg);
-                            System.out.println("----------------------");
-                            System.out.println(newAnno.toString());
-
                             superResult.getElseStore().insertValue(param, newAnno);
-                            System.out.println(superResult.getElseStore().toString());
                             superResult.getThenStore().insertValue(param, newAnno);
                         }
                     }
                 }
-                //                System.out.println(superResult.toString());
             }
         }
+
+        System.out.println(superResult.getThenStore().toString());
 
         return superResult;
     }
