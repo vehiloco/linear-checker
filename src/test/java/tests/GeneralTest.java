@@ -15,7 +15,7 @@ public class GeneralTest extends CheckerFrameworkPerFileTest {
                 LinearChecker.class,
                 "general",
                 "-Anomsgtext",
-                "-Astubs=stubs/",
+                "-Astubs=security.astub",
                 "-AnonNullStringsConcatenation",
                 "-nowarn");
     }

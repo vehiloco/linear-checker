@@ -1,0 +1,7 @@
+package java.security;
+
+import org.checkerframework.checker.linear.qual.Unique;
+
+class SecureRandom {
+    void nextBytes(@Unique byte[] bytes);
+}

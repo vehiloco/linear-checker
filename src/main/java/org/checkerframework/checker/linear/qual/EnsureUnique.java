@@ -12,5 +12,5 @@ public @interface EnsureUnique {
     String[] value();
 
     @QualifierArgument("value")
-    String[] whatever();
+    String[] states() default {};
 }

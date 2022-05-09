@@ -3,6 +3,7 @@ package org.checkerframework.checker.linear;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.MayAliased;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -13,6 +14,7 @@ import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.framework.type.SubtypeIsSubsetQualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.TreeUtils;
 
 public class LinearAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
@@ -25,6 +27,9 @@ public class LinearAnnotatedTypeFactory
     /** The @{@link MayAliased} annotation. */
     protected final AnnotationMirror MAYALIASED =
             AnnotationBuilder.fromClass(elements, MayAliased.class);
+
+    protected final ExecutableElement uniqueElements =
+            TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);;
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker, true);
