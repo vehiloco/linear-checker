@@ -44,7 +44,6 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             if (methodName.equals("nextBytesSimulator")) {
                 List<Node> args = n.getArguments();
                 for (Node arg : args) {
-                    System.out.println(arg.toStringDebug());
                     CFValue previousValue = in.getValueOfSubNode(arg);
                     if (previousValue != null) {
                         for (AnnotationMirror anno : previousValue.getAnnotations()) {
@@ -57,14 +56,19 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                             JavaExpression param = JavaExpression.fromNode(arg);
                             superResult.getElseStore().insertValue(param, newAnno);
                             superResult.getThenStore().insertValue(param, newAnno);
+                            superResult.getRegularStore().insertValue(param, newAnno);
+                            // CFValue
+                            Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
+                            newSet.add(newAnno);
+                            CFValue newValue =
+                                    analysis.createAbstractValue(
+                                            newSet, previousValue.getUnderlyingType());
+                            superResult.setResultValue(newValue);
                         }
                     }
                 }
             }
         }
-
-        System.out.println(superResult.getThenStore().toString());
-
         return superResult;
     }
 
@@ -101,42 +105,4 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         }
         return superResult;
     }
-
-    //    @Override
-    //    public TransferResult<CFValue, CFStore> visitLocalVariable(
-    //            LocalVariableNode n, TransferInput<CFValue, CFStore> in) {
-    //        //        System.out.println("---------------------Start Linear Transfer
-    //        // visitLocalVariable");
-    //        //        System.out.println(n.toStringDebug());
-    //        //        System.out.println(n.getReceiver());
-    //        //        System.out.println(n.isLValue());
-    //        //        System.out.println(n.getTree().getKind());
-    //        TransferResult<CFValue, CFStore> superResult = super.visitLocalVariable(n, in);
-    //        // When visitMethodInvocation, things are different.
-    //        if (isRhs) {
-    //            CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
-    //            CFValue oldValue = (CFValue) store.getValue(n);
-    //            System.out.println(oldValue.toStringFullyQualified());
-    //            AnnotationMirror newAddedAnno = this.atypeFactory.UNIQUE;
-    //            Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-    //            newSet.add(newAddedAnno);
-    //            CFValue newValue = analysis.createAbstractValue(newSet,
-    // oldValue.getUnderlyingType());
-    //            store.updateForAssignment(n, newValue);
-    //            superResult.setResultValue(newValue);
-    //            System.out.println("---------------------End Linear Transfer visitLocalVariable");
-    //        }
-    //        return superResult;
-    //    }
-
-    //    @Override
-    //    public void processCommonAssignment(
-    //            TransferInput in, Node lhs, Node rhs, CFStore store, CFValue rhsValue) {
-    //        // update information in the store
-    //        AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
-    //        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-    //        newSet.add(newAddedAnno);
-    //        CFValue c = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
-    //        super.processCommonAssignment(in, lhs, rhs, store, c);
-    //    }
 }
