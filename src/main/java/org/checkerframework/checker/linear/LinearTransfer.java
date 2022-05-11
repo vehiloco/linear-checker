@@ -51,9 +51,10 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                     AnnotationUtils.getElementValueArray(
                                             anno, this.atypeFactory.uniqueElements, String.class);
                             AnnotationBuilder builder = new AnnotationBuilder(env, Unique.class);
-                            builder.setValue("value", new String[] {"initialized"});
+                            builder.setValue("value", new String[] {"initialized new"});
                             AnnotationMirror newAnno = builder.build();
                             JavaExpression param = JavaExpression.fromNode(arg);
+                            // I don't know whats the meaning of insert value. just for updating?
                             superResult.getElseStore().insertValue(param, newAnno);
                             superResult.getThenStore().insertValue(param, newAnno);
                             superResult.getRegularStore().insertValue(param, newAnno);
@@ -62,7 +63,8 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                             newSet.add(newAnno);
                             CFValue newValue =
                                     analysis.createAbstractValue(
-                                            newSet, previousValue.getUnderlyingType());
+                                            newSet,
+                                            superResult.getResultValue().getUnderlyingType());
                             superResult.setResultValue(newValue);
                         }
                     }

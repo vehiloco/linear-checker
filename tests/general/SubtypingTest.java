@@ -6,13 +6,15 @@ import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
 
-    void test(@Unique({"initialized"}) String x, @Unique String y, @MayAliased String z) {
+    // full states are [initialized, state2, state3, state4], after get all of this
+    // it can do nothing with the security random.
+    void test(@Unique({}) String x, @Unique String y, @MayAliased String z) {
         @Unique String b;
         b = y;
         // ::error: unique.assignment.not.allowed
         b = y;
-        // ::error: unique.parameter.not.allowed
-        testInvocation(y);
+        //        // ::error: unique.parameter.not.allowed
+        //        testInvocation(y);
         // ::error: unique.assignment.not.allowed
         b = y;
 
@@ -24,9 +26,9 @@ class SubtypingTest {
         bytesIV = x;
     }
 
-    void testInvocation(String x) {
-        String b;
-        b = x;
+    void testInvocation(String x2) {
+        String b2;
+        b2 = x2;
         return;
     }
 
