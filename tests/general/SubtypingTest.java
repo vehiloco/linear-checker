@@ -9,6 +9,8 @@ class SubtypingTest {
     // full states are [initialized, state2, state3, state4], after get all of this
     // it can do nothing with the security random.
     // For example:
+    // default state is {}, {initialized} means cannot be intizalied again,
+    // similarly, state2 means cannot be state2 agaiin
     void test(@Unique({}) String x, @Unique({}) String y, @MayAliased String z) {
         @Unique({})
         String b;
