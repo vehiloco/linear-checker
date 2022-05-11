@@ -100,6 +100,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 break;
             }
 
+            // let new assignment take effect later.
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
                 superResult.setResultValue(newRhsValue);
                 break;

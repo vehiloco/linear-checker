@@ -8,8 +8,9 @@ class SubtypingTest {
 
     // full states are [initialized, state2, state3, state4], after get all of this
     // it can do nothing with the security random.
-    void test(@Unique({}) String x, @Unique String y, @MayAliased String z) {
-        @Unique String b;
+    void test(@Unique({}) String x, @Unique({}) String y, @MayAliased String z) {
+        @Unique({})
+        String b;
         b = y;
         // ::error: unique.assignment.not.allowed
         b = y;
@@ -27,8 +28,8 @@ class SubtypingTest {
     }
 
     void testInvocation(String x2) {
-        String b2;
-        b2 = x2;
+        //        String b2;
+        //        b2 = x2;
         return;
     }
 
@@ -36,7 +37,7 @@ class SubtypingTest {
     @EnsureUnique(
             value = "#1",
             states = {"initialized"})
-    void nextBytesSimulator(@Unique({}) String str) {
-        return;
+    public String nextBytesSimulator(@Unique({}) String str) {
+        return str;
     }
 }

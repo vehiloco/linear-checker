@@ -58,10 +58,15 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
         AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
+        AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Unique.class);
+        List<String> oldValues =
+                AnnotationUtils.getElementValueArray(
+                        lhsAnnotationMirror, this.atypeFactory.uniqueElements, String.class);
         System.out.println("lhs is: " + lhs.toString());
         System.out.println("rhs is: " + rhs.toString());
         System.out.println("The LHS type is now: " + lhsValueType.toString());
         System.out.println("The RHS type is now: " + rhsValueType.toString());
+        System.out.println("The LHS anno elements are now: " + oldValues.toString());
         if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, DISAPPEAR)) {
             checker.reportError(rhs, "unique.assignment.not.allowed");
         }
