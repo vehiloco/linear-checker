@@ -8,6 +8,7 @@ class SubtypingTest {
 
     // full states are [initialized, state2, state3, state4], after get all of this
     // it can do nothing with the security random.
+    // For example:
     void test(@Unique({}) String x, @Unique({}) String y, @MayAliased String z) {
         @Unique({})
         String b;
@@ -28,8 +29,8 @@ class SubtypingTest {
     }
 
     void testInvocation(String x2) {
-        //        String b2;
-        //        b2 = x2;
+        String b2;
+        b2 = x2;
         return;
     }
 
