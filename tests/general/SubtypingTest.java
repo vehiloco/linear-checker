@@ -47,23 +47,23 @@ class SubtypingTest {
     @EnsureUnique(
             value = "#1",
             states = {"initialized"})
-    public void nextBytesSimulator(@Unique({}) String str) {
-        return;
+    public String nextBytesSimulator(@Unique({}) String str) {
+        return str;
     }
 
     @SuppressWarnings("contracts.postcondition.not.satisfied")
     @EnsureUnique(
             value = "#1",
             states = {"initialized", "state2"})
-    public void state2(@Unique({}) String str) {
-        return;
+    public String state2(@Unique({}) String str) {
+        return str;
     }
 
     @SuppressWarnings("contracts.postcondition.not.satisfied")
     @EnsureUnique(
             value = "#1",
             states = {"initialized", "state2", "end"})
-    public void end(@Unique({}) String str) {
-        return;
+    public String end(@Unique({}) String str) {
+        return str;
     }
 }

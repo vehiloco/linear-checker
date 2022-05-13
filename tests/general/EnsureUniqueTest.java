@@ -1,9 +1,9 @@
- package general;
+package general;
 
- import java.security.SecureRandom;
- import org.checkerframework.checker.linear.qual.Unique;
+import java.security.SecureRandom;
+import org.checkerframework.checker.linear.qual.Unique;
 
- class EnsureUniqueTest {
+class EnsureUniqueTest {
     // For example, suppose state0 is a initial state and will be changed
     // to state1 after being called by test1, while test 2 only accepts
     // state0.
@@ -15,7 +15,7 @@
         @Unique({})
         byte[] bytesIV = new byte[16];
         SecureRandom secureRandom = new SecureRandom();
-        // 
+        //
         secureRandom.nextBytes(bytesIV);
     }
     //    @EnsureUnique(value = "#1", state = "state1")
@@ -23,8 +23,8 @@
     //
     //    @EnsureUnique(value = "#1", state = "state1")
     //    //    @RequireUnique(value = "#1", value = "state0"), dont really need, extra
- requirement
+    // requirement
     // on
     //    // parameters
     //    void test2(@Unique({"state0"}) String x, @Unique String y) {}
- }
+}
