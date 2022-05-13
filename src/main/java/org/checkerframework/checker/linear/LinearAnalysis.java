@@ -20,18 +20,29 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     }
 
     @Override
-    protected boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
+    public boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
         if (newVal != null) {
             CFValue oldVal = nodeValues.get(node);
             if (node instanceof AssignmentNode) {
                 Node rhsNode = ((AssignmentNode) node).getExpression();
+                Node lhsNode = ((AssignmentNode) node).getTarget();
                 if (rhsNode instanceof LocalVariableNode) {
                     oldVal = nodeValues.get(rhsNode);
                     nodeValues.put(rhsNode, newVal);
                 }
+
+                if (lhsNode instanceof LocalVariableNode) {
+                    oldVal = nodeValues.get(lhsNode);
+                    if (oldVal != null) {
+                        System.out.println("------lhs node value is not null");
+                        System.out.println(lhsNode.toStringDebug());
+                        System.out.println(oldVal.toStringFullyQualified());
+                    }
+                }
             }
+
             //            else if (node instanceof MethodInvocationNode) {
             //                // update arguments， TODO: underlyting type is not correct!!!
             //                for (Node arg : ((MethodInvocationNode) node).getArguments()) {

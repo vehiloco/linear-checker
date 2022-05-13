@@ -30,7 +30,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     protected final AnnotationMirror MAYALIASED =
             AnnotationBuilder.fromClass(elements, MayAliased.class);
 
-    public LinearVisitor(final BaseTypeChecker checker) {
+    public LinearVisitor(BaseTypeChecker checker) {
         super(checker);
         env = checker.getProcessingEnvironment();
     }
