@@ -8,7 +8,6 @@ import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
-import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFStore;
@@ -32,12 +31,14 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                     oldVal = nodeValues.get(rhsNode);
                     nodeValues.put(rhsNode, newVal);
                 }
-            } else if (node instanceof MethodInvocationNode) {
-                // update arguments， TODO: underlyting type is not correct!!!
-                for (Node arg : ((MethodInvocationNode) node).getArguments()) {
-                    nodeValues.put(arg, newVal);
-                }
-            } else {
+            }
+            //            else if (node instanceof MethodInvocationNode) {
+            //                // update arguments， TODO: underlyting type is not correct!!!
+            //                for (Node arg : ((MethodInvocationNode) node).getArguments()) {
+            //                    nodeValues.put(arg, newVal);
+            //                }
+            //            }
+            else {
                 nodeValues.put(node, newVal);
             }
             nodeValueChanged = !Objects.equals(oldVal, newVal);

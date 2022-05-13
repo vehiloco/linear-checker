@@ -11,9 +11,8 @@ class EnsureUniqueTest {
     // multi args mean all allowed
     // change the postcondition into @top and try to show some msg.
     // relation between top and mayalias
-    public void test1() {
-        @Unique({})
-        byte[] bytesIV = new byte[16];
+    public void test1(byte @Unique [] bytes) {
+        byte @Unique [] bytesIV = bytes;
         SecureRandom secureRandom = new SecureRandom();
         //
         secureRandom.nextBytes(bytesIV);
