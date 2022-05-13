@@ -25,9 +25,16 @@ class SubtypingTest {
         @Unique({})
         String bytesIV;
         bytesIV = x;
+
+        // For example, all states are {"initialized", "state2", "end"}, make explict state machine.
+        // Supertype is unique({})
+        //  @Unique({}) becomes  @Unique({"initialized"}), it can go to state2 or end, not
+        // initialized again
         nextBytesSimulator(bytesIV);
-        // ::error: unique.assignment.not.allowed
-        bytesIV = x;
+        //  @Unique({"initialized"}) becomes  @Unique({"initialized", "state2"}), it can only end
+        state2(bytesIV);
+        // @Unique({"initialized", "state2"}) becomes  @Unique({"initialized", "state2", "end"})
+        end(bytesIV);
     }
 
     void testInvocation(String x2) {
@@ -40,7 +47,23 @@ class SubtypingTest {
     @EnsureUnique(
             value = "#1",
             states = {"initialized"})
-    public String nextBytesSimulator(@Unique({}) String str) {
-        return str;
+    public void nextBytesSimulator(@Unique({}) String str) {
+        return;
+    }
+
+    @SuppressWarnings("contracts.postcondition.not.satisfied")
+    @EnsureUnique(
+            value = "#1",
+            states = {"initialized", "state2"})
+    public void state2(@Unique({}) String str) {
+        return;
+    }
+
+    @SuppressWarnings("contracts.postcondition.not.satisfied")
+    @EnsureUnique(
+            value = "#1",
+            states = {"initialized", "state2", "end"})
+    public void end(@Unique({}) String str) {
+        return;
     }
 }
