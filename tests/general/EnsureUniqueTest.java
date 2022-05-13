@@ -12,18 +12,10 @@ class EnsureUniqueTest {
     // change the postcondition into @top and try to show some msg.
     // relation between top and mayalias
     public void test1(byte @Unique [] bytes) {
-        byte @Unique [] bytesIV = bytes;
+        byte @Unique({}) [] bytesIV = bytes;
         SecureRandom secureRandom = new SecureRandom();
-        //
+        // After this method call,  byte @Unique [] bytesIV became  byte @Unique("initialized") []
+        // bytesIV
         secureRandom.nextBytes(bytesIV);
     }
-    //    @EnsureUnique(value = "#1", state = "state1")
-    //    void test1(@Unique({"state0"}) String x, @Unique String y) {}
-    //
-    //    @EnsureUnique(value = "#1", state = "state1")
-    //    //    @RequireUnique(value = "#1", value = "state0"), dont really need, extra
-    // requirement
-    // on
-    //    // parameters
-    //    void test2(@Unique({"state0"}) String x, @Unique String y) {}
 }

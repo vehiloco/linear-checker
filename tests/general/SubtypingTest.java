@@ -17,8 +17,8 @@ class SubtypingTest {
         b = y;
         // ::error: unique.assignment.not.allowed
         b = y;
-        //        // ::error: unique.parameter.not.allowed
-        //        testInvocation(y);
+        // ::error: unique.parameter.not.allowed
+        testInvocation(y);
         // ::error: unique.assignment.not.allowed
         b = y;
 
@@ -47,23 +47,23 @@ class SubtypingTest {
     @EnsureUnique(
             value = "#1",
             states = {"initialized"})
-    public String nextBytesSimulator(@Unique({}) String str) {
-        return str;
+    public void nextBytesSimulator(@Unique({}) String str) {
+        return;
     }
 
     @SuppressWarnings("contracts.postcondition.not.satisfied")
     @EnsureUnique(
             value = "#1",
             states = {"initialized", "state2"})
-    public String state2(@Unique({}) String str) {
-        return str;
+    public void state2(@Unique({}) String str) {
+        return;
     }
 
     @SuppressWarnings("contracts.postcondition.not.satisfied")
     @EnsureUnique(
             value = "#1",
             states = {"initialized", "state2", "end"})
-    public String end(@Unique({}) String str) {
-        return str;
+    public void end(@Unique({}) String str) {
+        return;
     }
 }
