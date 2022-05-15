@@ -20,7 +20,6 @@ class EnsureUniqueTest {
         SecureRandom secureRandom = new SecureRandom();
         // After this method call,  byte @Unique [] bytesIV became  byte @Unique("initialized") []
         // bytesIV
-        // Can we assign bytes IV to a new lhs again?
         secureRandom.nextBytes(bytesIV);
         byte @Unique({}) [] newBytesIv;
         secureRandom.nextBytes(bytesIV);
