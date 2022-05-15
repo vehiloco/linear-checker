@@ -1,6 +1,7 @@
 package general;
 
 import java.security.SecureRandom;
+import javax.crypto.spec.IvParameterSpec;
 import org.checkerframework.checker.linear.qual.Unique;
 
 class EnsureUniqueTest {
@@ -11,6 +12,9 @@ class EnsureUniqueTest {
     // multi args mean all allowed
     // change the postcondition into @top and try to show some msg.
     // relation between top and mayalias
+    /*
+    states = {"", "initialized", "used"}
+    * */
     public void test1(byte @Unique [] bytes) {
         byte @Unique({}) [] bytesIV = bytes;
         SecureRandom secureRandom = new SecureRandom();
@@ -25,5 +29,8 @@ class EnsureUniqueTest {
         newBytesIv = bytesIV;
         // ::error: unique.assignment.not.allowed
         newBytesIv = bytesIV;
+        IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
+        byte @Unique({}) [] testBytesIv;
+        testBytesIv = newBytesIv;
     }
 }

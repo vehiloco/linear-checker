@@ -1,0 +1,14 @@
+package javax.crypto.spec;
+
+import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.EnsureUnique;
+
+@EnsureUnique(
+        value = "#1",
+        states = {"initialized", "used"})
+public class IvParameterSpec {
+    @EnsureUnique(
+            value = "#1",
+            states = {"initialized", "used"})
+    public IvParameterSpec(byte @Unique({"initialized"})[] iv, int offset, int len);
+}
