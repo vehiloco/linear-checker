@@ -7,5 +7,5 @@ class SecureRandom {
     @EnsureUnique(
             value = "#1",
             states = {"initialized"})
-    void nextBytes(byte @Unique[] bytes);
+    void nextBytes(byte @Unique({})[] bytes);
 }

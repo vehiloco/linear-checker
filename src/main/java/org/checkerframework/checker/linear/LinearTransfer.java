@@ -1,6 +1,7 @@
 package org.checkerframework.checker.linear;
 
 import com.sun.source.tree.ExpressionTree;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -33,6 +34,14 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     public TransferResult<CFValue, CFStore> visitMethodInvocation(
             MethodInvocationNode n, TransferInput<CFValue, CFStore> in) {
         TransferResult<CFValue, CFStore> superResult = super.visitMethodInvocation(n, in);
+
+        List<Node> args = n.getArguments();
+        System.out.println("------------------------visit method invocation-----------");
+        for (Node arg : args) {
+            JavaExpression targetExpr = JavaExpression.fromNode(arg);
+            CFValue targetValue = in.getRegularStore().getValue(targetExpr);
+        }
+
         //        Node receiver = n.getTarget().getReceiver();
         //        // TODO: add restrictions
         //        if (receiver != null) {
@@ -80,6 +89,9 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         System.out.println("Transfer VisitAssignment --------------------------------");
+        System.out.println(in.toString());
+        CFValue oldLhsValue = in.getRegularStore().getValue((LocalVariableNode) n.getTarget());
+
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         Node rhs = n.getExpression();
         Node lhs = n.getTarget();
@@ -95,27 +107,24 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         AnnotatedTypeMirror valueType = this.atypeFactory.getAnnotatedType(valueExp);
         CFValue rhsValue = in.getValueOfSubNode(rhs);
         Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
-        AnnotationMirror newAddedAnno = this.atypeFactory.DISAPPEAR;
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-        newSet.add(newAddedAnno);
+        newSet.add(this.atypeFactory.DISAPPEAR);
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
         for (AnnotationMirror annoMirror : rhsAnnotations) {
             // Update RHS node CFValue
             if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, annoMirror)) {
                 store.updateForAssignment(rhs, newRhsValue);
-                // Update LHS node CFValue
-                store.updateForAssignment(lhs, rhsValue);
                 break;
             }
 
-            // Update LHS node CFValue if there exists elements
-
-            // let new assignment take effect later.
+            // let new assignment take effect later. keep lhs value as it is in input
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
+                store.updateForAssignment(lhs, oldLhsValue);
                 superResult.setResultValue(newRhsValue);
                 break;
             }
         }
+        //        System.out.println(superResult.toString());
         return superResult;
     }
 }

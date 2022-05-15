@@ -19,6 +19,8 @@ class EnsureUniqueTest {
         // Can we assign bytes IV to a new lhs again?
         secureRandom.nextBytes(bytesIV);
         byte @Unique({}) [] newBytesIv;
+        // I don't know why bytes IV is not initialized here but it is in assignment
+        secureRandom.nextBytes(bytesIV);
         // TODO: transfer status in unique
         newBytesIv = bytesIV;
         // ::error: unique.assignment.not.allowed

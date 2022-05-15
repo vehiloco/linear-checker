@@ -23,33 +23,28 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     public boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
+        if (node instanceof AssignmentNode
+                && ((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
+            Node lhsNode = ((AssignmentNode) node).getTarget();
+            CFValue lhsOldValue = nodeValues.get(lhsNode);
+            if (lhsOldValue == null
+                    && transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
+                            != null) {
+                // search value from store
+                nodeValues.put(
+                        lhsNode,
+                        transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode));
+            }
+        }
         if (newVal != null) {
             CFValue oldVal = nodeValues.get(node);
             if (node instanceof AssignmentNode) {
                 Node rhsNode = ((AssignmentNode) node).getExpression();
-                Node lhsNode = ((AssignmentNode) node).getTarget();
                 if (rhsNode instanceof LocalVariableNode) {
                     oldVal = nodeValues.get(rhsNode);
                     nodeValues.put(rhsNode, newVal);
                 }
-
-                if (lhsNode instanceof LocalVariableNode) {
-                    oldVal = nodeValues.get(lhsNode);
-                    if (oldVal != null) {
-                        System.out.println("------lhs node value is not null");
-                        System.out.println(lhsNode.toStringDebug());
-                        System.out.println(oldVal.toStringFullyQualified());
-                    }
-                }
-            }
-
-            //            else if (node instanceof MethodInvocationNode) {
-            //                // update arguments， TODO: underlyting type is not correct!!!
-            //                for (Node arg : ((MethodInvocationNode) node).getArguments()) {
-            //                    nodeValues.put(arg, newVal);
-            //                }
-            //            }
-            else {
+            } else {
                 nodeValues.put(node, newVal);
             }
             nodeValueChanged = !Objects.equals(oldVal, newVal);
