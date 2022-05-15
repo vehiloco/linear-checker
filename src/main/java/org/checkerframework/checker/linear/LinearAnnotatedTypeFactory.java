@@ -41,7 +41,7 @@ public class LinearAnnotatedTypeFactory
         return new LinearQualifierHierarchy(getSupportedTypeQualifiers());
     }
 
-    // SubtypeIsSubsetQualifierHierarchy
+    // SubtypeIsSubsetQualifierHierarchy, TODO: use my own qualifier hierarchy
     private final class LinearQualifierHierarchy extends SubtypeIsSupersetQualifierHierarchy {
 
         /**
