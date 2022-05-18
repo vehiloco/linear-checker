@@ -18,16 +18,15 @@ class EnsureUniqueTest {
     public void test1(byte @Unique [] bytes) {
         byte @Unique({}) [] bytesIV = bytes;
         SecureRandom secureRandom = new SecureRandom();
-        // After this method call,  byte @Unique [] bytesIV became  byte @Unique("initialized") []
-        // bytesIV
+        // After this method call,  byte @Unique [] bytesIV becomes  byte @Unique("initialized") []
         secureRandom.nextBytes(bytesIV);
         byte @Unique({}) [] newBytesIv;
-        secureRandom.nextBytes(bytesIV);
-        // TODO: transfer status in unique
+        // transfer state and the rhs becomes disappear
         newBytesIv = bytesIV;
         // ::error: unique.assignment.not.allowed
         newBytesIv = bytesIV;
         // newBytesIv becomes @Unique({"used"}) ,not finished yet!
+        // TODO: try debug options, write a local simulating class first
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;

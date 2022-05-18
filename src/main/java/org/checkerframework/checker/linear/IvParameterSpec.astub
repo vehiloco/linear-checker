@@ -3,9 +3,6 @@ package javax.crypto.spec;
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.checker.linear.qual.EnsureUnique;
 
-@EnsureUnique(
-        value = "#1",
-        states = {"used"})
 public class IvParameterSpec {
     @EnsureUnique(
             value = "#1",
