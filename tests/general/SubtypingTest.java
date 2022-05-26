@@ -34,8 +34,11 @@ class SubtypingTest {
         //        nextBytesSimulator(bytesIV);
         //        bytesIV = x;
         IvParameterSpecSimulator ivParam = new IvParameterSpecSimulator(bytesIV);
-
-        bytesIV = x;
+        // ::error: usedup.read.not.allowed
+        x = bytesIV;
+        // here is my question.
+        @Unique({})
+        String question = "a";
     }
 
     void testInvocation(String x2) {
