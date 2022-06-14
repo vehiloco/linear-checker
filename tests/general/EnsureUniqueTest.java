@@ -1,10 +1,10 @@
- package general;
+package general;
 
- import java.security.SecureRandom;
- import javax.crypto.spec.IvParameterSpec;
- import org.checkerframework.checker.linear.qual.Unique;
+import java.security.SecureRandom;
+import javax.crypto.spec.IvParameterSpec;
+import org.checkerframework.checker.linear.qual.Unique;
 
- class EnsureUniqueTest {
+class EnsureUniqueTest {
     // For example, suppose state0 is a initial state and will be changed
     // to state1 after being called by test1, while test 2 only accepts
     // state0.
@@ -17,10 +17,9 @@
     * */
     public void test1(byte @Unique [] bytes) {
         // New objects shoule be unique.
-        byte @Unique({}) [] bytesIV = new bytes[] bytev;
+        byte @Unique({}) [] bytesIV = new byte[16];
         SecureRandom secureRandom = new SecureRandom();
-        // After this method call,  byte @Unique [] bytesIV becomes  byte @Unique("initialized")
- []
+        // After this method call,  byte @Unique [] bytesIV becomes  byte @Unique("initialized")[]
         secureRandom.nextBytes(bytesIV);
         byte @Unique({}) [] newBytesIv;
         // transfer state and the rhs becomes disappear
@@ -34,22 +33,22 @@
         testBytesIv = newBytesIv;
     }
 
-    class Demo {
-        Object o;
-    }
-
-    class Global {
-        static Object f;
-    }
-    class Leak {
-        Leak(@MaybeShared Demo p) {
-            p.o = this;
-            Global.f = this;
-        }
-    }
-
-    void foo(@MaybeShared Demo d) {
-        @Unique Leak l = new Leak(d);
-        // two references! l and d.o
-    }
- }
+    //    class Demo {
+    //        Object o;
+    //    }
+    //
+    //    class Global {
+    //        static Object f;
+    //    }
+    //    class Leak {
+    //        Leak(@MaybeShared Demo p) {
+    //            p.o = this;
+    //            Global.f = this;
+    //        }
+    //    }
+    //
+    //    void foo(@MaybeShared Demo d) {
+    //        @Unique Leak l = new Leak(d);
+    //        // two references! l and d.o
+    //    }
+}

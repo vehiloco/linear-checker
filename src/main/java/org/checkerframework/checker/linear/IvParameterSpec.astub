@@ -7,5 +7,5 @@ public class IvParameterSpec {
     @EnsureUnique(
             value = "#1",
             states = {"used"})
-    public IvParameterSpec(byte @Unique({"initialized"})[] iv, int offset, int len);
+    public IvParameterSpec(byte @Unique({"initialized"})[] iv);
 }
