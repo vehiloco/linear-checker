@@ -57,7 +57,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
-        AnnotationMirror valueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
+        AnnotationMirror rhsValueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
         //        AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Unique.class);
         //        List<String> oldValues =
         //                AnnotationUtils.getElementValueArray(
@@ -68,7 +68,8 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         System.out.println("The LHS type is now: " + lhsValueType.toString());
         System.out.println("The RHS type is now: " + rhsValueType.toString());
         //        System.out.println("The LHS anno elements are now: " + oldValues.toString());
-        if (valueTypeMirror != null && AnnotationUtils.areSameByName(valueTypeMirror, DISAPPEAR)) {
+        if (rhsValueTypeMirror != null
+                && AnnotationUtils.areSameByName(rhsValueTypeMirror, DISAPPEAR)) {
             checker.reportError(rhs, "unique.assignment.not.allowed");
         }
         return super.visitAssignment(node, p);
