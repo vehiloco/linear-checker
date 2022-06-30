@@ -24,6 +24,13 @@ class SubtypingTest {
         @Unique({})
         String bytesIV;
         bytesIV = x;
+        // finish rule of field update
+        FieldTest fieldTest = new FieldTest("a");
+        @Unique({})
+        String forField = bytesIV;
+        fieldTest.a = forField;
+        // ::error: unique.assignment.not.allowed
+        fieldTest.a = forField;
     }
 
     void testInvocation(String x2) {
@@ -33,7 +40,7 @@ class SubtypingTest {
     }
 
     class FieldTest {
-        String a;
+        public String a;
 
         public FieldTest(String val) {
             this.a = val;

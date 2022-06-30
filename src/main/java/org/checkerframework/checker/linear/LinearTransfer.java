@@ -6,16 +6,14 @@ import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Disappear;
-import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
-import org.checkerframework.dataflow.cfg.node.AssignmentNode;
-import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
-import org.checkerframework.dataflow.cfg.node.MethodInvocationNode;
-import org.checkerframework.dataflow.cfg.node.Node;
+import org.checkerframework.dataflow.cfg.node.*;
+import org.checkerframework.dataflow.expression.ArrayAccess;
+import org.checkerframework.dataflow.expression.FieldAccess;
 import org.checkerframework.dataflow.expression.JavaExpression;
+import org.checkerframework.dataflow.expression.LocalVariable;
 import org.checkerframework.framework.flow.*;
-import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
@@ -90,26 +88,42 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         System.out.println("Transfer VisitAssignment --------------------------------");
         System.out.println(in.toString());
-        CFValue oldLhsValue = in.getRegularStore().getValue((LocalVariableNode) n.getTarget());
+        CFValue oldLhsValue = null;
+        if (n.getTarget() instanceof LocalVariableNode) {
+            oldLhsValue = in.getRegularStore().getValue((LocalVariableNode) n.getTarget());
+        }
+        if (n.getTarget() instanceof FieldAccessNode) {
+            oldLhsValue = in.getRegularStore().getValue((FieldAccessNode) n.getTarget());
+        }
 
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         Node rhs = n.getExpression();
         Node lhs = n.getTarget();
         CFStore store = in.getRegularStore();
-        if (!(rhs instanceof LocalVariableNode) || !(lhs instanceof LocalVariableNode)) {
-            return superResult;
-        }
+        //        if (!(rhs instanceof LocalVariableNode) || !(lhs instanceof LocalVariableNode)) {
+        //            return superResult;
+        //        }
         JavaExpression lhsExpr = JavaExpression.fromNode(lhs);
         CFValue lhsValue = store.getValue(lhsExpr);
-        AnnotationMirror lhsAnnoMirror =
-                this.atypeFactory.getAnnotationByClass(lhsValue.getAnnotations(), Unique.class);
+        //        AnnotationMirror lhsAnnoMirror =
+        //                this.atypeFactory.getAnnotationByClass(lhsValue.getAnnotations(),
+        // Unique.class);
         ExpressionTree valueExp = (ExpressionTree) rhs.getTree();
-        AnnotatedTypeMirror valueType = this.atypeFactory.getAnnotatedType(valueExp);
+        //        AnnotatedTypeMirror valueType = this.atypeFactory.getAnnotatedType(valueExp);
         CFValue rhsValue = in.getValueOfSubNode(rhs);
         Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
         newSet.add(this.atypeFactory.DISAPPEAR);
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+        // Check rhs type, if rhs is not array,field access or local variable, just return super
+        // result
+        // TODO: there maybe a bug
+        JavaExpression je = JavaExpression.fromNode(rhs);
+        if (!(je instanceof ArrayAccess
+                || je instanceof FieldAccess
+                || je instanceof LocalVariable)) {
+            return superResult;
+        }
         for (AnnotationMirror annoMirror : rhsAnnotations) {
             // Update RHS node CFValue
             if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, annoMirror)) {
@@ -119,7 +133,9 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
 
             // let new assignment take effect later. keep lhs value as it is in input
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
-                store.updateForAssignment(lhs, oldLhsValue);
+                if (oldLhsValue != null) {
+                    store.updateForAssignment(lhs, oldLhsValue);
+                }
                 superResult.setResultValue(newRhsValue);
                 break;
             }
