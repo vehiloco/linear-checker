@@ -6,7 +6,7 @@ import org.checkerframework.framework.qual.SubtypeOf;
 import org.checkerframework.framework.qual.TypeKind;
 
 @Documented
-@SubtypeOf({MayAliased.class})
+@SubtypeOf({Shared.class})
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
 @DefaultFor(typeKinds = {TypeKind.ARRAY})

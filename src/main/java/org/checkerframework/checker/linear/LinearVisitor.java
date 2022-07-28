@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.Disappear;
-import org.checkerframework.checker.linear.qual.MayAliased;
+import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.common.basetype.BaseTypeVisitor;
@@ -26,9 +26,9 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
             AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link MayAliased} annotation. */
+    /** The @{@link Shared} annotation. */
     protected final AnnotationMirror MAYALIASED =
-            AnnotationBuilder.fromClass(elements, MayAliased.class);
+            AnnotationBuilder.fromClass(elements, Shared.class);
 
     public LinearVisitor(BaseTypeChecker checker) {
         super(checker);
@@ -57,7 +57,20 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
-        AnnotationMirror rhsValueTypeMirror = rhsValueType.getAnnotation(Disappear.class);
+        // forbid assignment to a disappear variable
+        AnnotationMirror rhsAnnotationMirror = rhsValueType.getAnnotation(Disappear.class);
+        AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Disappear.class);
+        if (lhsAnnotationMirror != null
+                && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR)) {
+            checker.reportError(lhs, "disappear.assignment.not.allowed");
+        }
+        if (rhsAnnotationMirror != null
+                        && AnnotationUtils.areSameByName(rhsAnnotationMirror, DISAPPEAR)
+                || lhsAnnotationMirror != null
+                        && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR)) {
+            checker.reportError(rhs, "disappear.assignment.not.allowed");
+        }
+
         //        AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Unique.class);
         //        List<String> oldValues =
         //                AnnotationUtils.getElementValueArray(
@@ -67,11 +80,6 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         System.out.println("rhs is: " + rhs.toString());
         System.out.println("The LHS type is now: " + lhsValueType.toString());
         System.out.println("The RHS type is now: " + rhsValueType.toString());
-        //        System.out.println("The LHS anno elements are now: " + oldValues.toString());
-        if (rhsValueTypeMirror != null
-                && AnnotationUtils.areSameByName(rhsValueTypeMirror, DISAPPEAR)) {
-            checker.reportError(rhs, "unique.assignment.not.allowed");
-        }
         return super.visitAssignment(node, p);
     }
 }

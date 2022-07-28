@@ -24,7 +24,7 @@ class EnsureUniqueTest {
         byte @Unique({}) [] newBytesIv;
         // transfer state and the rhs becomes disappear
         newBytesIv = bytesIV;
-        // ::error: unique.assignment.not.allowed
+        // ::error: disappear.assignment.not.allowed
         newBytesIv = bytesIV;
         // newBytesIv becomes @Unique({"used"}) ,not finished yet!
         // TODO: try debug options, write a local simulating class first

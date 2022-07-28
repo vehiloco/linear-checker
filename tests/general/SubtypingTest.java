@@ -1,6 +1,6 @@
 package general;
 
-import org.checkerframework.checker.linear.qual.MayAliased;
+import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
@@ -10,15 +10,15 @@ class SubtypingTest {
     // For example:
     // default state is {}, {initialized} means cannot be intizalied again,
     // similarly, state2 means cannot be state2 agaiin
-    void test(@Unique({}) String x, @Unique({}) String y, @MayAliased String z) {
+    void test(@Unique({}) String x, @Unique({"initialized"}) String y, @Shared String z) {
         @Unique({})
         String b;
         b = y;
-        // ::error: unique.assignment.not.allowed
+        // ::error: (disappear.assignment.not.allowed)
         b = y;
-        // ::error: unique.parameter.not.allowed
+        // ::error: (unique.parameter.not.allowed)
         testInvocation(y);
-        // ::error: unique.assignment.not.allowed
+        // ::error: (disappear.assignment.not.allowed)
         b = y;
 
         @Unique({})
@@ -29,7 +29,7 @@ class SubtypingTest {
         @Unique({})
         String forField = bytesIV;
         fieldTest.a = forField;
-        // ::error: unique.assignment.not.allowed
+        // ::error: disappear.assignment.not.allowed
         fieldTest.a = forField;
     }
 

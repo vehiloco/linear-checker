@@ -23,6 +23,7 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     public boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
+        // update rhs value
         if (node instanceof AssignmentNode
                 && ((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
             Node lhsNode = ((AssignmentNode) node).getTarget();

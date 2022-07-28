@@ -5,7 +5,7 @@ import java.util.Collection;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import org.checkerframework.checker.linear.qual.Disappear;
-import org.checkerframework.checker.linear.qual.MayAliased;
+import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.framework.flow.CFStore;
@@ -24,9 +24,9 @@ public class LinearAnnotatedTypeFactory
             AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link MayAliased} annotation. */
+    /** The @{@link Shared} annotation. */
     protected final AnnotationMirror MAYALIASED =
-            AnnotationBuilder.fromClass(elements, MayAliased.class);
+            AnnotationBuilder.fromClass(elements, Shared.class);
 
     protected final ExecutableElement uniqueElements =
             TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);;
