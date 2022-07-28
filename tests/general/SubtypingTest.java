@@ -9,7 +9,7 @@ class SubtypingTest {
     // it can do nothing with the security random.
     // For example:
     // default state is {}, {initialized} means cannot be intizalied again,
-    // similarly, state2 means cannot be state2 agaiin
+    // similarly, state2 means cannot be state2 again
     void test(@Unique({}) String x, @Unique({"initialized"}) String y, @Shared String z) {
         @Unique({})
         String b;
