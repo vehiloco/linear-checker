@@ -25,8 +25,7 @@ public class LinearAnnotatedTypeFactory
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
     /** The @{@link Shared} annotation. */
-    protected final AnnotationMirror MAYALIASED =
-            AnnotationBuilder.fromClass(elements, Shared.class);
+    protected final AnnotationMirror SHARED = AnnotationBuilder.fromClass(elements, Shared.class);
 
     protected final ExecutableElement uniqueElements =
             TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);;

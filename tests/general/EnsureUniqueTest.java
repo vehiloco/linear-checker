@@ -17,7 +17,7 @@ class EnsureUniqueTest {
     * */
     public void test1(byte @Unique [] bytes) {
         // New objects shoule be unique.
-        byte @Unique({}) [] bytesIV = new byte[16];
+        byte @Unique({}) [] bytesIV = new byte @Unique({}) [16];
         SecureRandom secureRandom = new SecureRandom();
         // After this method call,  byte @Unique [] bytesIV becomes  byte @Unique("initialized")[]
         secureRandom.nextBytes(bytesIV);

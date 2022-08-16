@@ -16,8 +16,8 @@ class SubtypingTest {
         b = y;
         // ::error: (disappear.assignment.not.allowed)
         b = y;
-        // ::error: (unique.parameter.not.allowed)
-        testInvocation(y);
+        //        // ::error: (unique.parameter.not.allowed)
+        //        testInvocation(y);
         // ::error: (disappear.assignment.not.allowed)
         b = y;
 

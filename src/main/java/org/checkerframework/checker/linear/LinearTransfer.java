@@ -1,7 +1,6 @@
 package org.checkerframework.checker.linear;
 
 import com.sun.source.tree.ExpressionTree;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -33,12 +32,12 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             MethodInvocationNode n, TransferInput<CFValue, CFStore> in) {
         TransferResult<CFValue, CFStore> superResult = super.visitMethodInvocation(n, in);
 
-        List<Node> args = n.getArguments();
-        System.out.println("------------------------visit method invocation-----------");
-        for (Node arg : args) {
-            JavaExpression targetExpr = JavaExpression.fromNode(arg);
-            CFValue targetValue = in.getRegularStore().getValue(targetExpr);
-        }
+        //        List<Node> args = n.getArguments();
+        //        System.out.println("------------------------visit method invocation-----------");
+        //        for (Node arg : args) {
+        //            JavaExpression targetExpr = JavaExpression.fromNode(arg);
+        //            CFValue targetValue = in.getRegularStore().getValue(targetExpr);
+        //        }
 
         //        Node receiver = n.getTarget().getReceiver();
         //        // TODO: add restrictions
