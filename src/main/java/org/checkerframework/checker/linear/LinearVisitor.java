@@ -46,7 +46,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         for (int i = 0; i < parameterTypes.size(); i++) {
             AnnotationMirror ant = parameterTypes.get(i).getAnnotation(Disappear.class);
             if (ant != null && AnnotationUtils.areSameByName(ant, DISAPPEAR)) {
-                checker.reportError(parameterTypes.get(i), "unique.parameter.not.allowed");
+                checker.reportError(node, "disappear.parameter.not.allowed");
             }
         }
         // type check return type
@@ -54,7 +54,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         if (returnType != null) {
             AnnotationMirror ant = returnType.getAnnotation(Disappear.class);
             if (ant != null) {
-                checker.reportError(returnType, "unique.parameter.not.allowed");
+                checker.reportError(node, "disappear.return.not.allowed");
             }
         }
         return super.visitMethod(node, p);

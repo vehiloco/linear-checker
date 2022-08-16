@@ -1,5 +1,6 @@
 package general;
 
+import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
 
@@ -37,6 +38,18 @@ class SubtypingTest {
         String b2;
         b2 = x2;
         return;
+    }
+
+    // ::error: disappear.parameter.not.allowed
+    void testParameter(@Disappear Object o) {
+        return;
+    }
+
+    // ::error: disappear.return.not.allowed
+    // ::error: return.type.incompatible
+    @Disappear
+    Object testReturn(Object o) {
+        return o;
     }
 
     class FieldTest {
