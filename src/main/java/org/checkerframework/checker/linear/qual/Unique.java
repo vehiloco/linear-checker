@@ -7,7 +7,7 @@ import org.checkerframework.framework.qual.SubtypeOf;
 @SubtypeOf({Shared.class})
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
-// @DefaultFor(typeKinds = {TypeKind.ARRAY})
+// @DefaultFor(typeKinds = {TypeKind.ARRAY}) TODO: default for null.
 public @interface Unique {
     String[] value() default {};
 }

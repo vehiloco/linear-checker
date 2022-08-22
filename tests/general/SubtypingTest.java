@@ -12,6 +12,8 @@ class SubtypingTest {
     // default state is {}, {initialized} means cannot be intizalied again,
     // similarly, state2 means cannot be state2 again
     void test(@Unique({}) String x, @Unique({"initialized"}) String y, @Shared String z) {
+        String a;
+        a = null;
         @Unique({})
         String b;
         b = y;
@@ -45,10 +47,10 @@ class SubtypingTest {
         return;
     }
 
-    // ::error: disappear.return.not.allowed
-    // ::error: return.type.incompatible
     @Disappear
+    // ::error: disappear.return.not.allowed
     Object testReturn(Object o) {
+        // ::error: return.type.incompatible
         return o;
     }
 

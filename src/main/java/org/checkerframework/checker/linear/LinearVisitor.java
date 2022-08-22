@@ -7,6 +7,7 @@ import com.sun.source.tree.MethodTree;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -84,6 +85,10 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
+        // skip if rhs is null
+        if (rhsValueType.getKind() == TypeKind.NULL) {
+            return super.visitAssignment(node, p);
+        }
         // forbid assignment to a disappear variable
         AnnotationMirror rhsAnnotationMirror = rhsValueType.getAnnotation(Disappear.class);
         AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Disappear.class);
