@@ -54,6 +54,19 @@ class SubtypingTest {
         return o;
     }
 
+    // test states transfer between unique reference.
+    void testStatesTransferUnique(@Unique({"a"}) Object x, @Unique({"b"}) Object y) {
+        @Unique Object z;
+        // z is supposed to be Unique({"a"})
+        z = x;
+        // z is supposed to be Unique({"b"})
+        z = y;
+    }
+
+    // test states transfer between shared
+
+    // test states transfer between shared and unique
+
     class FieldTest {
         public String a;
 

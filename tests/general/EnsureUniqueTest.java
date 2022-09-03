@@ -28,6 +28,7 @@ class EnsureUniqueTest {
         newBytesIv = bytesIV;
         // newBytesIv becomes @Unique({"used"}) ,not finished yet!
         // TODO: try debug options, write a local simulating class first
+        // TODO: what do we want? @Unique({"initialized", "used"}) or just @Unique({"used"})
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;
