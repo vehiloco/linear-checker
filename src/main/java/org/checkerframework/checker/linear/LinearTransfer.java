@@ -85,7 +85,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     @Override
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
-        System.out.println("Transfer VisitAssignment --------------------------------");
+        System.out.println("Transfer VisitAssignment in--------------------------------");
         System.out.println(in.toString());
         CFValue oldLhsValue = null;
         if (n.getTarget() instanceof LocalVariableNode) {
@@ -133,13 +133,15 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             // let new assignment take effect later. keep lhs value as it is in input
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
                 if (oldLhsValue != null) {
+                    // there is a bug
                     store.updateForAssignment(lhs, oldLhsValue);
                 }
                 superResult.setResultValue(newRhsValue);
                 break;
             }
         }
-        //        System.out.println(superResult.toString());
+        System.out.println("Transfer VisitAssignment out--------------------------------");
+        System.out.println(superResult.toString());
         return superResult;
     }
 }
