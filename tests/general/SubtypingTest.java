@@ -70,6 +70,12 @@ class SubtypingTest {
     }
 
     // test states transfer between shared
+    void testSharedTransfer(@Shared({"x"}) Object x, @Shared({"y"}) Object y) {
+        @Shared Object z;
+        z = x;
+        z = x;
+        z = y;
+    }
 
     // test states transfer between shared and unique
     void testSharedUniqueTransfer(@Unique({"a"}) Object u) {
