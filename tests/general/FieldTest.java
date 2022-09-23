@@ -1,19 +1,23 @@
 package general;
 
-import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.*;
 
 public class FieldTest {
-    Object field1;
-    Object field2;
+    @Shared Object field1;
+    @Shared Object field2;
+    @Shared Object field3;
 
     void test1() {
         FieldTest fieldTest = new FieldTest();
         // ::warning: (cast.unsafe.constructor.invocation)
         @Unique Object rhsValue = new @Unique Object();
+        @Unique Object rhsValue2 = new @Unique({"a"}) Object();
+        @Shared Object rhsValue3 = new @Shared({"b"}) Object();
+        // fieldTest.field1 still need to be @shared
         fieldTest.field1 = rhsValue;
-        // ::error: disappear.assignment.not.allowed
-        fieldTest.field2 = rhsValue;
-        fieldTest.field1 = fieldTest.field2;
-        fieldTest.field2 = fieldTest.field1;
+        // TODO: this test case failed, field2 should be shared("a")
+        fieldTest.field2 = rhsValue2;
+        //TODO: this test case failed
+        fieldTest.field3 = rhsValue3;
     }
 }
