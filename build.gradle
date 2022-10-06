@@ -23,7 +23,7 @@ ext.versions = [
 ]
 
 sourceCompatibility = 1.8
-def checkerframework_local = true  // Set this variable to [true] while using local version of checker framework.
+def checkerframework_local = false  // Set this variable to [true] while using local version of checker framework.
 def CHECKERFRAMEWORK = System.getenv("CHECKERFRAMEWORK")
 
 dependencies {
