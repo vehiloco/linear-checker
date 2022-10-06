@@ -9,6 +9,8 @@ import org.checkerframework.framework.qual.SubtypeOf;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
-@DefaultQualifierInHierarchy
 @SubtypeOf({})
-public @interface Top {}
+@DefaultQualifierInHierarchy
+public @interface Shared {
+    String[] value() default {};
+}

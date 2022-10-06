@@ -1,54 +1,147 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.Tree;
+import com.sun.source.tree.ExpressionTree;
 import java.util.Set;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
-import org.checkerframework.dataflow.cfg.node.AssignmentNode;
-import org.checkerframework.dataflow.cfg.node.Node;
+import org.checkerframework.dataflow.cfg.node.*;
+import org.checkerframework.dataflow.expression.ArrayAccess;
+import org.checkerframework.dataflow.expression.FieldAccess;
+import org.checkerframework.dataflow.expression.JavaExpression;
+import org.checkerframework.dataflow.expression.LocalVariable;
 import org.checkerframework.framework.flow.*;
 import org.checkerframework.javacutil.AnnotationUtils;
 
-public class LinearTransfer extends CFTransfer {
+public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 
     private final LinearAnnotatedTypeFactory atypeFactory;
+    private final ProcessingEnvironment env;
 
-    /** The @{@link Unique} annotation. */
-    public LinearTransfer(CFAnalysis analysis) {
-        super(analysis);
+    /** The @{@link Disappear} annotation. */
+    public LinearTransfer(LinearAnalysis analysis) {
+        super(analysis, true);
         this.atypeFactory = (LinearAnnotatedTypeFactory) analysis.getTypeFactory();
+        env = atypeFactory.getChecker().getProcessingEnvironment();
+    }
+
+    @Override
+    public TransferResult<CFValue, CFStore> visitMethodInvocation(
+            MethodInvocationNode n, TransferInput<CFValue, CFStore> in) {
+        TransferResult<CFValue, CFStore> superResult = super.visitMethodInvocation(n, in);
+
+        //        List<Node> args = n.getArguments();
+        //        System.out.println("------------------------visit method invocation-----------");
+        //        for (Node arg : args) {
+        //            JavaExpression targetExpr = JavaExpression.fromNode(arg);
+        //            CFValue targetValue = in.getRegularStore().getValue(targetExpr);
+        //        }
+
+        //        Node receiver = n.getTarget().getReceiver();
+        //        // TODO: add restrictions
+        //        if (receiver != null) {
+        //            String methodName = n.getTarget().getMethod().getSimpleName().toString();
+        //            JavaExpression target = JavaExpression.fromNode(receiver);
+        //            if (methodName.equals("nextBytesSimulator")) {
+        //                List<Node> args = n.getArguments();
+        //                for (Node arg : args) {
+        //                    CFValue previousValue = in.getValueOfSubNode(arg);
+        //                    if (previousValue != null) {
+        //                        for (AnnotationMirror anno : previousValue.getAnnotations()) {
+        //                            List<String> oldValues =
+        //                                    AnnotationUtils.getElementValueArray(
+        //                                            anno, this.atypeFactory.uniqueElements,
+        // String.class);
+        //                            AnnotationBuilder builder = new AnnotationBuilder(env,
+        // Unique.class);
+        //                            builder.setValue("value", new String[] {"initialized new"});
+        //                            AnnotationMirror newAnno = builder.build();
+        //                            JavaExpression param = JavaExpression.fromNode(arg);
+        //                            // I don't know whats the meaning of insert value. just for
+        // updating?
+        //                            superResult.getElseStore().insertValue(param, newAnno);
+        //                            superResult.getThenStore().insertValue(param, newAnno);
+        //                            superResult.getRegularStore().insertValue(param, newAnno);
+        //                            // CFValue
+        //                            Set<AnnotationMirror> newSet =
+        // AnnotationUtils.createAnnotationSet();
+        //                            newSet.add(newAnno);
+        //                            CFValue newValue =
+        //                                    analysis.createAbstractValue(
+        //                                            newSet,
+        //
+        // superResult.getResultValue().getUnderlyingType());
+        //                            superResult.setResultValue(newValue);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        return superResult;
     }
 
     @Override
     public TransferResult<CFValue, CFStore> visitAssignment(
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
-        Node lhs = n.getTarget();
+        System.out.println("Transfer VisitAssignment in--------------------------------");
+        System.out.println(in.toString());
+        CFValue oldLhsValue = null;
+        if (n.getTarget() instanceof LocalVariableNode) {
+            oldLhsValue = in.getRegularStore().getValue((LocalVariableNode) n.getTarget());
+        }
+        if (n.getTarget() instanceof FieldAccessNode) {
+            oldLhsValue = in.getRegularStore().getValue((FieldAccessNode) n.getTarget());
+        }
+
+        TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
         Node rhs = n.getExpression();
-        Tree tree = n.getTree();
-        CFValue rhsValue = (CFValue) in.getValueOfSubNode(rhs);
-
-        // re-construct an assignment node here.
-        AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
+        Node lhs = n.getTarget();
+        CFStore store = in.getRegularStore();
+        //        if (!(rhs instanceof LocalVariableNode) || !(lhs instanceof LocalVariableNode)) {
+        //            return superResult;
+        //        }
+        JavaExpression lhsExpr = JavaExpression.fromNode(lhs);
+        CFValue lhsValue = store.getValue(lhsExpr);
+        //        AnnotationMirror lhsAnnoMirror =
+        //                this.atypeFactory.getAnnotationByClass(lhsValue.getAnnotations(),
+        // Unique.class);
+        ExpressionTree valueExp = (ExpressionTree) rhs.getTree();
+        //        AnnotatedTypeMirror valueType = this.atypeFactory.getAnnotatedType(valueExp);
+        CFValue rhsValue = in.getValueOfSubNode(rhs);
+        Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
         Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-        newSet.add(newAddedAnno);
+        newSet.add(this.atypeFactory.DISAPPEAR);
         CFValue newRhsValue = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
+        // Check rhs type, if rhs is not array,field access or local variable, just return super
+        // result
+        // TODO: there maybe a bug
+        JavaExpression je = JavaExpression.fromNode(rhs);
+        if (!(je instanceof ArrayAccess
+                || je instanceof FieldAccess
+                || je instanceof LocalVariable)) {
+            return superResult;
+        }
+        for (AnnotationMirror annoMirror : rhsAnnotations) {
+            // Update RHS node CFValue
+            if (AnnotationUtils.areSameByName(this.atypeFactory.UNIQUE, annoMirror)) {
+                store.updateForAssignment(rhs, newRhsValue);
+                break;
+            }
 
-        CFAbstractStore store = (CFAbstractStore) in.getRegularStore();
-        store.updateForAssignment(rhs, newRhsValue);
-        store = (CFAbstractStore) in.getRegularStore();
-        return super.visitAssignment(n, in);
+            // let new assignment take effect later. keep lhs value as it is in input
+            if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
+                if (oldLhsValue != null) {
+                    // there is a bug
+                    store.updateForAssignment(lhs, oldLhsValue);
+                }
+                superResult.setResultValue(newRhsValue);
+                break;
+            }
+        }
+        System.out.println("Transfer VisitAssignment out--------------------------------");
+        System.out.println(superResult.toString());
+        return superResult;
     }
-
-    //    @Override
-    //    public void processCommonAssignment(
-    //            TransferInput in, Node lhs, Node rhs, CFStore store, CFValue rhsValue) {
-    //        // update information in the store
-    //        AnnotationMirror newAddedAnno = this.atypeFactory.USEDUP;
-    //        Set<AnnotationMirror> newSet = AnnotationUtils.createAnnotationSet();
-    //        newSet.add(newAddedAnno);
-    //        CFValue c = analysis.createAbstractValue(newSet, rhsValue.getUnderlyingType());
-    //        super.processCommonAssignment(in, lhs, rhs, store, c);
-    //    }
 }

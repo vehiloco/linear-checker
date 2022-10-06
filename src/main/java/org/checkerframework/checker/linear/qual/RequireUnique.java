@@ -11,5 +11,5 @@ public @interface RequireUnique {
     String[] value();
 
     @QualifierArgument("value")
-    String[] whatever();
+    String[] states();
 }

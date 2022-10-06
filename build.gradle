@@ -19,11 +19,11 @@ configurations {
 }
 
 ext.versions = [
-		checkerFramework: "3.21.1",
+		checkerFramework: "3.21.4-eisop1",
 ]
 
 sourceCompatibility = 1.8
-def checkerframework_local = true  // Set this variable to [true] while using local version of checker framework.
+def checkerframework_local = false  // Set this variable to [true] while using local version of checker framework.
 def CHECKERFRAMEWORK = System.getenv("CHECKERFRAMEWORK")
 
 dependencies {
@@ -34,11 +34,10 @@ dependencies {
 		}
 		implementation files("${CHECKERFRAMEWORK}/checker/dist/checker-qual.jar")
 		localDeps files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
-		implementation files("${CHECKERFRAMEWORK}/checker/dist/javac.jar")
 	} else {
-		localDeps "org.checkerframework:checker:${versions.checkerFramework}"
-		localDeps "org.checkerframework:checker-qual:${versions.checkerFramework}"
-		localDeps "org.checkerframework:checker-util:${versions.checkerFramework}"
+		localDeps "io.github.eisop:checker:${versions.checkerFramework}"
+		localDeps "io.github.eisop:checker-qual:${versions.checkerFramework}"
+		localDeps "io.github.eisop:checker-util:${versions.checkerFramework}"
 	}
 	implementation configurations.localDeps
 
@@ -46,7 +45,7 @@ dependencies {
 
 	// Testing
 	testImplementation "junit:junit:4.13"
-	testImplementation "org.checkerframework:framework-test:${versions.checkerFramework}"
+	testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
 
 	errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 }

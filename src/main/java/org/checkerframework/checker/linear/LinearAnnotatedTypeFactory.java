@@ -2,75 +2,113 @@ package org.checkerframework.checker.linear;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
-import org.checkerframework.checker.linear.qual.NonLinear;
+import org.checkerframework.checker.linear.qual.Disappear;
+import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
-import org.checkerframework.checker.linear.qual.UsedUp;
-import org.checkerframework.common.basetype.BaseAnnotatedTypeFactory;
 import org.checkerframework.common.basetype.BaseTypeChecker;
+import org.checkerframework.framework.flow.CFStore;
+import org.checkerframework.framework.flow.CFValue;
 import org.checkerframework.framework.type.ElementQualifierHierarchy;
+import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.TreeUtils;
 
-public class LinearAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
+public class LinearAnnotatedTypeFactory
+        extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
 
+    /** The @{@link Disappear} annotation. */
+    protected final AnnotationMirror DISAPPEAR =
+            AnnotationBuilder.fromClass(elements, Disappear.class);
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUE = AnnotationBuilder.fromClass(elements, Unique.class);
-    /** The @{@link NonLinear} annotation. */
-    protected final AnnotationMirror NONLINEAR =
-            AnnotationBuilder.fromClass(elements, NonLinear.class);
-    /** The @{@link UsedUp} annotation. */
-    protected final AnnotationMirror USEDUP = AnnotationBuilder.fromClass(elements, UsedUp.class);
+    /** The @{@link Shared} annotation. */
+    protected final AnnotationMirror SHARED = AnnotationBuilder.fromClass(elements, Shared.class);
+
+    protected final ExecutableElement uniqueElements =
+            TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);;
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
-        super(checker);
+        super(checker, true);
         this.postInit();
     }
 
     @Override
     protected QualifierHierarchy createQualifierHierarchy() {
-        return new LinearQualifierHierarchy(this.getSupportedTypeQualifiers(), elements);
+        return new LinearQualifierHierarchy(getSupportedTypeQualifiers(), elements);
     }
 
+    // SubtypeIsSubsetQualifierHierarchy, TODO: use my own qualifier hierarchy
     private final class LinearQualifierHierarchy extends ElementQualifierHierarchy {
 
         /**
-         * Creates a LinearQualifierHierarchy from the given classes.
+         * Creates a CryptoQualifierHierarchy from the given classes.
          *
          * @param qualifierClasses classes of annotations that are the qualifiers for this hierarchy
-         * @param elements element utils
          */
         public LinearQualifierHierarchy(
                 Collection<Class<? extends Annotation>> qualifierClasses, Elements elements) {
             super(qualifierClasses, elements);
         }
 
+        // {"used"} <: {"initialized"} <: {}, hard code now
         @Override
-        public boolean isSubtype(final AnnotationMirror subtype, final AnnotationMirror supertype) {
-            if (AnnotationUtils.areSameByName(supertype, USEDUP)
-                    || AnnotationUtils.areSameByName(subtype, UNIQUE)) {
+        public boolean isSubtype(AnnotationMirror subtype, AnnotationMirror supertype) {
+            if (AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
                 return true;
-            } else if (AnnotationUtils.areSameByName(subtype, USEDUP)
-                    || AnnotationUtils.areSameByName(supertype, UNIQUE)) {
-                return false;
-            } else if (AnnotationUtils.areSameByName(subtype, UNIQUE)
-                    && AnnotationUtils.areSameByName(supertype, UNIQUE)) {
-                return true;
-            } else {
-                return false;
             }
+            if (!AnnotationUtils.areSameByName(subtype, supertype)
+                    && AnnotationUtils.areSameByName(supertype, SHARED)) {
+                return true;
+            }
+            if (AnnotationUtils.areSameByName(subtype, supertype)) {
+                if (AnnotationUtils.areSameByName(subtype, UNIQUE)) {
+                    List<String> supertypeElementList =
+                            AnnotationUtils.getElementValueArray(
+                                    supertype, "value", String.class, true);
+                    List<String> subtypeElementList =
+                            AnnotationUtils.getElementValueArray(
+                                    subtype, "value", String.class, true);
+                    // max size is 1
+                    if (supertypeElementList.size() > 0 || subtypeElementList.size() > 0) {
+                        return false;
+                    }
+                    if (supertypeElementList.size() == 0) {
+                        return true;
+                    }
+                    //                    if (supertypeElementList.size() !=
+                    // subtypeElementList.size()) {
+                    //                        return false;
+                    //                    }
+                    if (supertypeElementList.size() == subtypeElementList.size()) {
+                        if (supertypeElementList.get(0) == subtypeElementList.get(0)) {
+                            return true;
+                        }
+                        if (supertypeElementList.get(0) == "initialized"
+                                && subtypeElementList.get(0) == "used") {
+                            return true;
+                        }
+                    }
+                } else if (AnnotationUtils.areSameByName(subtype, SHARED)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
         public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return LinearAnnotatedTypeFactory.this.USEDUP;
+            return a2;
         }
 
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return LinearAnnotatedTypeFactory.this.USEDUP;
+            return a2;
         }
     }
 }
