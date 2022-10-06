@@ -17,7 +17,7 @@ public class FieldTest {
         fieldTest.field1 = rhsValue;
         // TODO: this test case failed, field2 should be shared("a")
         fieldTest.field2 = rhsValue2;
-        //TODO: this test case failed
+        // TODO: this test case failed
         fieldTest.field3 = rhsValue3;
     }
 }
