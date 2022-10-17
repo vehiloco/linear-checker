@@ -24,9 +24,7 @@ class EnsureUniqueTest {
         byte @Unique({}) [] newBytesIv;
         // transfer state and the rhs becomes disappear
         newBytesIv = bytesIV;
-        // newBytesIv becomes @Unique({"used"}) ,not finished yet!
-        // TODO: try debug options, write a local simulating class first
-        // TODO: what do we want? @Unique({"used"}) or just @Unique({"used"})
+        // newBytesIv becomes @Unique({"used"}).
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;

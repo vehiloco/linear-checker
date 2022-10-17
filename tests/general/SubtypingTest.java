@@ -55,22 +55,22 @@ class SubtypingTest {
     }
 
     // test states transfer between unique reference.
-    void testStatesTransferUnique(@Unique({"a"}) Object x, @Unique({"b"}) Object y) {
-        @Unique({"c"})
+    void testStatesTransferUnique(@Unique({"initialized"}) Object x, @Unique({"used"}) Object y) {
+        @Unique({})
         Object z;
-        // z is supposed to be Unique({"a"})
+        // z is supposed to be Unique({"initialized"})
         z = x;
-        // z is supposed to be Unique({"b"})
+        // z is supposed to be Unique({"used"})
         z = y;
 
-        @Unique({"d"})
+        @Unique({"initialized"})
         Object n;
-        // n is supposed to be Unique({"b"})
+        // ::error: (assignment.type.incompatible)
         n = z;
     }
 
     // test states transfer between shared
-    void testSharedTransfer(@Shared({"x"}) Object x, @Shared({"y"}) Object y) {
+    void testSharedTransfer(@Shared({"x"}) Object x, @Shared({"x, y"}) Object y) {
         @Shared Object z;
         z = x;
         z = x;

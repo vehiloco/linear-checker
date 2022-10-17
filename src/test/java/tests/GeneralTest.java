@@ -8,7 +8,12 @@ import org.junit.runners.Parameterized.Parameters;
 
 public class GeneralTest extends CheckerFrameworkPerDirectoryTest {
     public GeneralTest(List<File> testFiles) {
-        super(testFiles, LinearChecker.class, "general", "-Anomsgtext", "-Astubs=linear/");
+        super(
+                testFiles,
+                LinearChecker.class,
+                "general",
+                "-Anomsgtext",
+                "-Astubs=/Users/alexliu/projects/linear-checker/src/main/java/org/checkerframework/checker/linear");
     }
 
     @Parameters

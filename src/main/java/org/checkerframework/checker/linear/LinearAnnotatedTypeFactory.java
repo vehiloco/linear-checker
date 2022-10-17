@@ -97,7 +97,7 @@ public class LinearAnnotatedTypeFactory
                         return false;
                     }
                     if (supertypeElementList.size() == subtypeElementList.size()) {
-                        if (supertypeElementList.get(0) == subtypeElementList.get(0)) {
+                        if (supertypeElementList.get(0).equals(subtypeElementList.get(0))) {
                             return true;
                         }
                         if (supertypeElementList.get(0) == "initialized"

@@ -11,6 +11,7 @@ public class FieldTest {
         FieldTest fieldTest = new FieldTest();
         // ::warning: (cast.unsafe.constructor.invocation)
         @Unique Object rhsValue = new @Unique Object();
+        // ::warning: (cast.unsafe.constructor.invocation)
         @Unique Object rhsValue2 = new @Unique({"a"}) Object();
         @Shared Object rhsValue3 = new @Shared({"b"}) Object();
         // fieldTest.field1 still need to be @shared
