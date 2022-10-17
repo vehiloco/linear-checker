@@ -38,6 +38,18 @@ public class LinearAnnotatedTypeFactory
         this.postInit();
     }
 
+    //    @Override
+    //    protected QualifierHierarchy createQualifierHierarchy() {
+    //        return new LinearQualifierHierarchy(getSupportedTypeQualifiers());
+    //    }
+    //
+    //    private final class LinearQualifierHierarchy extends SubtypeIsSupersetQualifierHierarchy {
+    //        public LinearQualifierHierarchy(Collection<Class<? extends Annotation>>
+    // qualifierClasses) {
+    //            super(qualifierClasses, processingEnv);
+    //        }
+    //    }
+
     @Override
     protected QualifierHierarchy createQualifierHierarchy() {
         return new LinearQualifierHierarchy(getSupportedTypeQualifiers(), elements);
@@ -56,7 +68,7 @@ public class LinearAnnotatedTypeFactory
             super(qualifierClasses, elements);
         }
 
-        // {"used"} <: {"initialized"} <: {}, hard code now
+        //     {"used"} <: {"initialized"} <: {}, hard code now
         @Override
         public boolean isSubtype(AnnotationMirror subtype, AnnotationMirror supertype) {
             if (AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
@@ -75,16 +87,15 @@ public class LinearAnnotatedTypeFactory
                             AnnotationUtils.getElementValueArray(
                                     subtype, "value", String.class, true);
                     // max size is 1
-                    if (supertypeElementList.size() > 0 || subtypeElementList.size() > 0) {
+                    if (supertypeElementList.size() > 1 || subtypeElementList.size() > 1) {
                         return false;
                     }
                     if (supertypeElementList.size() == 0) {
                         return true;
                     }
-                    //                    if (supertypeElementList.size() !=
-                    // subtypeElementList.size()) {
-                    //                        return false;
-                    //                    }
+                    if (supertypeElementList.size() != subtypeElementList.size()) {
+                        return false;
+                    }
                     if (supertypeElementList.size() == subtypeElementList.size()) {
                         if (supertypeElementList.get(0) == subtypeElementList.get(0)) {
                             return true;
