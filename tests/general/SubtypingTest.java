@@ -60,6 +60,8 @@ class SubtypingTest {
         Object z;
         // z is supposed to be Unique({"initialized"})
         z = x;
+        // :: error: (disappear.assignment.not.allowed)
+        z = x;
         // z is supposed to be Unique({"used"})
         z = y;
 

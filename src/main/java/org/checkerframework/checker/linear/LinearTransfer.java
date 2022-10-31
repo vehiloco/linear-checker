@@ -133,7 +133,6 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             // let new assignment take effect later. keep lhs value as it is in input
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, annoMirror)) {
                 if (oldLhsValue != null) {
-                    // there is a bug
                     store.updateForAssignment(lhs, oldLhsValue);
                 }
                 superResult.setResultValue(newRhsValue);

@@ -28,6 +28,8 @@ class EnsureUniqueTest {
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;
+        // :: error: (argument.type.incompatible)
+        IvParameterSpec ivSpec2 = new IvParameterSpec(testBytesIv);
     }
 
     //    class Demo {
