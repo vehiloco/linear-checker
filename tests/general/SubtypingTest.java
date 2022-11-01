@@ -27,13 +27,6 @@ class SubtypingTest {
         @Unique({})
         String bytesIV;
         bytesIV = x;
-        // finish rule of field update
-        FieldTest fieldTest = new FieldTest("a");
-        @Unique({})
-        String forField = bytesIV;
-        fieldTest.a = forField;
-        // ::error: disappear.assignment.not.allowed
-        fieldTest.a = forField;
     }
 
     void testInvocation(String x2) {
@@ -80,17 +73,11 @@ class SubtypingTest {
     }
 
     // test states transfer between shared and unique
-    void testSharedUniqueTransfer(@Unique({"a"}) Object u) {
+    void testSharedUniqueTransfer(@Unique({"a"}) Object u1, @Unique({"b"}) Object u2) {
         @Shared Object s;
         // s is supposed to be @Unique({"a"})
-        s = u;
-    }
-
-    class FieldTest {
-        public String a;
-
-        public FieldTest(String val) {
-            this.a = val;
-        }
+        s = u1;
+        // s is supposed to be @Unique({"a", "b"})
+        s = u2;
     }
 }
