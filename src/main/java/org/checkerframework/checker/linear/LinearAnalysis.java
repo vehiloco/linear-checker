@@ -7,6 +7,7 @@ import javax.lang.model.type.TypeMirror;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
+import org.checkerframework.dataflow.cfg.node.FieldAccessNode;
 import org.checkerframework.dataflow.cfg.node.LocalVariableNode;
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
@@ -24,19 +25,28 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
         // update rhs value
-        if (node instanceof AssignmentNode
-                && ((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
+        if (node instanceof AssignmentNode) {
             Node lhsNode = ((AssignmentNode) node).getTarget();
-            CFValue lhsOldValue = nodeValues.get(lhsNode);
-            if (lhsOldValue == null
-                    && transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
-                            != null) {
-                // search value from store
-                nodeValues.put(
-                        lhsNode,
-                        transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode));
+            if (((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
+                CFValue lhsOldValue = nodeValues.get(lhsNode);
+                if (lhsOldValue == null
+                        && transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
+                                != null) {
+                    // search value from store
+                    nodeValues.put(
+                            lhsNode,
+                            transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode));
+                }
+            }
+            if (((AssignmentNode) node).getTarget() instanceof FieldAccessNode) {
+                if (newVal != null) {
+                    nodeValues.put(
+                            lhsNode,
+                            transferResult.getRegularStore().getValue((FieldAccessNode) lhsNode));
+                }
             }
         }
+
         if (newVal != null) {
             CFValue oldVal = nodeValues.get(node);
             if (node instanceof AssignmentNode) {

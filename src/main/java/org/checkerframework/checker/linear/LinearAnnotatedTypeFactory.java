@@ -78,6 +78,10 @@ public class LinearAnnotatedTypeFactory
                     && AnnotationUtils.areSameByName(supertype, SHARED)) {
                 return true;
             }
+            if (AnnotationUtils.areSameByName(subtype, supertype)
+                    && AnnotationUtils.areSameByName(supertype, SHARED)) {
+                return true;
+            }
             if (AnnotationUtils.areSameByName(subtype, supertype)) {
                 if (AnnotationUtils.areSameByName(subtype, UNIQUE)) {
                     List<String> supertypeElementList =
