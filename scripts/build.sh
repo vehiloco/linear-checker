@@ -2,7 +2,7 @@
 
 set -e
 
-CRYPTO_CHECKER_PATH="/linear-checker"
+CRYPTO_CHECKER_PATH="/Users/alexliu/projects/linear-checker"
 
 CORPUS_FILE_NAME=$1
 BENCHMARK_PATH="$CRYPTO_CHECKER_PATH/benchmarks"
@@ -14,4 +14,4 @@ EXECUTABLE_PATH="$CRYPTO_CHECKER_PATH/scripts/run-dljc.sh"
 # Build the linear-checker
 cd ${CRYPTO_CHECKER_PATH} && ./gradlew assemble && ./gradlew copyDependencies &&./gradlew publishToMavenLocal
 
-python2 ${RUN_CORPUS_SCRIPT_PATH} --corpus-file ${CORPUS_FILE_PATH}  --executable ${EXECUTABLE_PATH}
+python3 ${RUN_CORPUS_SCRIPT_PATH} --corpus-file ${CORPUS_FILE_PATH}  --executable ${EXECUTABLE_PATH}
