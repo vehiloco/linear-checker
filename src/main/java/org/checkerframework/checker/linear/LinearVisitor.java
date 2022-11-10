@@ -80,7 +80,6 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     @Override
     public Void visitAssignment(AssignmentTree node, Void p) {
-        System.out.println("-----------Visitor----------------");
         ExpressionTree lhs = node.getVariable();
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
@@ -102,16 +101,6 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
                         && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR)) {
             checker.reportError(rhs, "disappear.assignment.not.allowed");
         }
-
-        //        AnnotationMirror lhsAnnotationMirror = lhsValueType.getAnnotation(Unique.class);
-        //        List<String> oldValues =
-        //                AnnotationUtils.getElementValueArray(
-        //                        lhsAnnotationMirror, this.atypeFactory.uniqueElements,
-        // String.class);
-        System.out.println("lhs is: " + lhs.toString());
-        System.out.println("rhs is: " + rhs.toString());
-        System.out.println("The LHS type is now: " + lhsValueType.toString());
-        System.out.println("The RHS type is now: " + rhsValueType.toString());
         return super.visitAssignment(node, p);
     }
 }
