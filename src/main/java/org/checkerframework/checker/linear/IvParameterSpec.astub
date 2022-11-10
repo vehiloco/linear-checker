@@ -1,4 +1,5 @@
 package javax.crypto.spec;
+package java.security;
 
 import org.checkerframework.checker.linear.qual.Unique;
 import org.checkerframework.checker.linear.qual.EnsureUnique;
@@ -8,4 +9,11 @@ public class IvParameterSpec {
             value = "#1",
             states = {"used"})
     public IvParameterSpec(byte @Unique({"initialized"})[] iv);
+}
+
+class SecureRandom {
+    @EnsureUnique(
+            value = "#1",
+            states = {"initialized"})
+    void nextBytes(byte @Unique({})[] bytes);
 }

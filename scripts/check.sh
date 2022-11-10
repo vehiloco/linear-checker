@@ -15,7 +15,7 @@ ${CRYPTOCHECKER}/build/libs/linear-checker.jar
 # Command
 DEBUG=""
 CHECKER="org.checkerframework.checker.linear.LinearChecker"
-STUBFILE="hardwarebacked.astub"
+STUBFILE="IvParameterSpec.astub"
 
 declare -a ARGS
 for i in "$@" ; do

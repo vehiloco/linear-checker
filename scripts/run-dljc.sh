@@ -14,7 +14,7 @@ ${CRYPTOCHECKER}/build/libs/linear-checker.jar
 
 DLJC=${JSR308}/do-like-javac
 CHECKER="org.checkerframework.checker.crypto.CryptoChecker"
-STUBFILE="cipher.astub"
+STUBFILE="IvParameterSpec.astub"
 
 # Parsing build command of the target program
 build_cmd="$1"
