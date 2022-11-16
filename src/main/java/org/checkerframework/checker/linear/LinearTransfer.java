@@ -26,7 +26,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
 
     /** The @{@link Disappear} annotation. */
     public LinearTransfer(LinearAnalysis analysis) {
-        super(analysis, true);
+        super(analysis, false);
         this.atypeFactory = (LinearAnnotatedTypeFactory) analysis.getTypeFactory();
         env = atypeFactory.getChecker().getProcessingEnvironment();
     }
