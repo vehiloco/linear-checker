@@ -3,17 +3,18 @@
 set -e
 
 # Environment
-export JSR308=$(cd $(dirname "$0")/../../ && pwd)
-export CF=${JSR308}/checker-framework
-export JAVAC=${CF}/checker/bin/javac
-export CRYPTOCHECKER=$(cd $(dirname "$0")/../ && pwd)
+# export JSR308=$(cd $(dirname "$0")/../../ && pwd)
+export CF=${CHECKERFRAMEWORK}
+export JAVAC=${CHECKERFRAMEWORK}/checker/bin/javac
+export LINEARCHECKER=$(cd $(dirname "$0")/../ && pwd)
 
 # Dependencies
-export CLASSPATH=${CRYPTOCHECKER}/build/classes/java/main:${CRYPTOCHECKER}/build/resources/main:\
-${CRYPTOCHECKER}/build/libs/linear-checker.jar
+export CLASSPATH=${LINEARCHECKER}/build/classes/java/main:${LINEARCHECKER}/build/resources/main:\
+${LINEARCHECKER}/build/libs/linear-checker.jar
 
-DLJC=${JSR308}/do-like-javac
-CHECKER="org.checkerframework.checker.crypto.CryptoChecker"
+# hard code, kind of ugly, TODO: fix it.
+DLJC=/Users/alexliu/projects/opprop/do-like-javac
+CHECKER="org.checkerframework.checker.linear.LinearChecker"
 STUBFILE="IvParameterSpec.astub"
 
 # Parsing build command of the target program
@@ -31,7 +32,7 @@ cd "$WORKING_DIR"
 typecheck_cmd="python3 $DLJC/dljc -t checker --checker $CHECKER --stub $STUBFILE -- $build_cmd"
 
 echo "============ Important variables ============="
-echo "JSR308: $JSR308"
+# echo "JSR308: $JSR308"
 echo "CLASSPATH: $CLASSPATH"
 echo "build cmd: $build_cmd"
 echo "running cmd: $typecheck_cmd"

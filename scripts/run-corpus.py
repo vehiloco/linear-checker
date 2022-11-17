@@ -3,11 +3,14 @@ import os
 import shlex
 import subprocess
 import sys
+import time
 
 import yaml
 
 
 # python run-corpus.py --corpus-file <absPath> --executable <absPath>
+
+SCRIPTS_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def main():
@@ -48,6 +51,7 @@ def main():
 
     failed_projects = list()
 
+    tool_excutable = os.path.join(SCRIPTS_DIR, "run-dljc.sh")
     assemble_check_cmd = "./gradlew assembleCheckTypes"
 
     for project_name, project_attrs in projects.items():
@@ -59,17 +63,33 @@ def main():
         print("Cleaning project...")
         subprocess.call(shlex.split(project_attrs["clean"]))
         print("Cleaning done.")
+        # Change to subproject dir, if we want to compile part of the project
+        if project_attrs["subdir"] and project_attrs["subdir"] != '':
+            project_dir = os.path.join(project_dir, project_attrs["subdir"])
+            print("==========")
+            print(project_dir)
+            os.chdir(project_dir)
+        # Running dljc
+        if project_attrs["mvn"] == True:
+            print("Running command: {}".format(tool_excutable + " " + project_attrs["build"]))
+            start = time.time()
+            rtn_code = subprocess.call([tool_excutable, project_attrs["build"]])
+            end = time.time()
+            print("Return code is {}.".format(rtn_code))
+            print("Time taken by {}: \t{}\t seconds".format(project_name, end - start))
+            if not rtn_code == 0:
+                failed_projects.append(project_name)
+        else:
+            # As there is a problem with build tool 'do-like-javac',
+            # use './gradlew assembleCheckTypes' instead.
+            # print "Running command: {}".format(tool_executable + " " + project_attrs["build"])
+            # rtn_code = subprocess.call([tool_executable, project_attrs["build"]])
 
-        # As there is a problem with build tool 'do-like-javac',
-        # use './gradlew assembleCheckTypes' instead.
-        # print "Running command: {}".format(tool_executable + " " + project_attrs["build"])
-        # rtn_code = subprocess.call([tool_executable, project_attrs["build"]])
-
-        print("Running command: {}".format(assemble_check_cmd))
-        rtn_code = subprocess.call(shlex.split(assemble_check_cmd))
-        print("Return code is {}.".format(rtn_code))
-        if not rtn_code == 0:
-            failed_projects.append(project_name)
+            print("Running command: {}".format(assemble_check_cmd))
+            rtn_code = subprocess.call(shlex.split(assemble_check_cmd))
+            print("Return code is {}.".format(rtn_code))
+            if not rtn_code == 0:
+                failed_projects.append(project_name)
 
     if len(failed_projects) > 0:
         print("----- Executable failed on {} out of {} projects. Failed projects are: {} -----".format(
