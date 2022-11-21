@@ -13,6 +13,7 @@ import org.checkerframework.framework.qual.QualifierArgument;
 public @interface EnsureUnique {
     String[] value();
 
+    // TODO: check and document
     @QualifierArgument("value")
     String[] states() default {};
 }

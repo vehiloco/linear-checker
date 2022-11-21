@@ -43,7 +43,11 @@ def main():
     for project_name, project_attrs in projects.items():
         project_dir = os.path.join(benchmark_dir, project_name)
         if not os.path.exists(project_dir):
-            git("clone", project_attrs["giturl"], "--depth", "1")
+            if project_attrs.get("tag"):
+                git("clone", project_attrs["giturl"], "--depth", "1", "--branch", project_attrs["tag"])
+            else:
+                git("clone", project_attrs["giturl"], "--depth", "1")
+
 
     print("----- Fetching corpus done. -----")
 
@@ -64,13 +68,11 @@ def main():
         subprocess.call(shlex.split(project_attrs["clean"]))
         print("Cleaning done.")
         # Change to subproject dir, if we want to compile part of the project
-        if project_attrs["subdir"] and project_attrs["subdir"] != '':
+        if project_attrs.get("subdir"):
             project_dir = os.path.join(project_dir, project_attrs["subdir"])
-            print("==========")
-            print(project_dir)
             os.chdir(project_dir)
         # Running dljc
-        if project_attrs["mvn"] == True:
+        if project_attrs.get("mvn"):
             print("Running command: {}".format(tool_excutable + " " + project_attrs["build"]))
             start = time.time()
             rtn_code = subprocess.call([tool_excutable, project_attrs["build"]])
