@@ -71,15 +71,9 @@ public class LinearAnnotatedTypeFactory
         //     {"used"} <: {"initialized"} <: {}, hard code now
         @Override
         public boolean isSubtype(AnnotationMirror subtype, AnnotationMirror supertype) {
-            if (AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
-                return true;
-            }
-            if (!AnnotationUtils.areSameByName(subtype, supertype)
-                    && AnnotationUtils.areSameByName(supertype, SHARED)) {
-                return true;
-            }
-            if (AnnotationUtils.areSameByName(subtype, supertype)
-                    && AnnotationUtils.areSameByName(supertype, SHARED)) {
+
+            if (AnnotationUtils.areSameByName(supertype, SHARED)
+                    || AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
                 return true;
             }
             if (AnnotationUtils.areSameByName(subtype, supertype)) {

@@ -28,8 +28,8 @@ class EnsureUniqueTest {
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;
+        // TODO: type hierarchy, it is a contradict, used should be the subtype of initialized
         // :: error: (argument.type.incompatible)
-        // TODO: type hierarchy
         IvParameterSpec ivSpec2 = new IvParameterSpec(testBytesIv);
     }
 
