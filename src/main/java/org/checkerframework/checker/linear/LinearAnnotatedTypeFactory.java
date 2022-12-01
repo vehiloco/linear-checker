@@ -104,9 +104,9 @@ public class LinearAnnotatedTypeFactory
                         if (supertypeElementList.get(0).equals(subtypeElementList.get(0))) {
                             return true;
                         }
-                        if (supertypeElementList.get(0) == "initialized"
-                                && subtypeElementList.get(0) == "used") {
-                            return true;
+                        if (supertypeElementList.get(0).equals("initialized")
+                                && subtypeElementList.get(0).equals("used")) {
+                            return false;
                         }
                     }
                 } else if (AnnotationUtils.areSameByName(subtype, SHARED)) {

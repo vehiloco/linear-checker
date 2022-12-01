@@ -84,6 +84,16 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         ExpressionTree rhs = node.getExpression();
         AnnotatedTypeMirror rhsValueType = atypeFactory.getAnnotatedType(rhs);
         AnnotatedTypeMirror lhsValueType = atypeFactory.getAnnotatedType(lhs);
+//        System.out.println(
+//                "----------------------lhs is: "
+//                        + lhs.toString()
+//                        + "  the type is: "
+//                        + lhsValueType.toString());
+//        System.out.println(
+//                "----------------------rhs is: "
+//                        + rhs.toString()
+//                        + "  the type is: "
+//                        + rhsValueType.toString());
         // skip if rhs is null
         if (rhsValueType.getKind() == TypeKind.NULL) {
             return super.visitAssignment(node, p);
