@@ -200,3 +200,7 @@ tests/build/
 .classpath
 .project
 .settings/
+
+# benchmarks
+
+benchmarks/androidKeyStoreProject1/

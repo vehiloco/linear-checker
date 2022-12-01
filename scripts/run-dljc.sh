@@ -15,7 +15,7 @@ ${LINEARCHECKER}/build/libs/linear-checker.jar
 # hard code, kind of ugly, TODO: fix it.
 DLJC=/Users/alexliu/projects/opprop/do-like-javac
 CHECKER="org.checkerframework.checker.linear.LinearChecker"
-STUBFILE="IvParameterSpec.astub"
+STUBFILE="/Users/alexliu/projects/linear-checker/src/main/java/org/checkerframework/checker/linear/"
 
 # Parsing build command of the target program
 build_cmd="$1"
