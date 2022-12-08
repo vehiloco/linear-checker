@@ -68,7 +68,8 @@ public class LinearAnnotatedTypeFactory
             super(qualifierClasses, elements);
         }
 
-        //     {"used"} <: {"initialized"} <: {}, hard code now
+        // 1.@Shared is super type
+        // 2.@Unique({}) is the super type of other @Unique with any elements
         @Override
         public boolean isSubtype(AnnotationMirror subtype, AnnotationMirror supertype) {
 
@@ -84,27 +85,16 @@ public class LinearAnnotatedTypeFactory
                     List<String> subtypeElementList =
                             AnnotationUtils.getElementValueArray(
                                     subtype, "value", String.class, true);
-                    // max size is 1
-                    if (supertypeElementList.size() > 1 || subtypeElementList.size() > 1) {
-                        return false;
-                    }
+                    // @Unique({}) is super
                     if (supertypeElementList.size() == 0) {
                         return true;
                     }
-                    if (supertypeElementList.size() != subtypeElementList.size()) {
-                        return false;
-                    }
-                    if (supertypeElementList.size() == subtypeElementList.size()) {
+                    // State is the same
+                    if (supertypeElementList.size() == 1 && subtypeElementList.size() == 1) {
                         if (supertypeElementList.get(0).equals(subtypeElementList.get(0))) {
                             return true;
                         }
-                        if (supertypeElementList.get(0).equals("initialized")
-                                && subtypeElementList.get(0).equals("used")) {
-                            return false;
-                        }
                     }
-                } else if (AnnotationUtils.areSameByName(subtype, SHARED)) {
-                    return true;
                 }
             }
             return false;

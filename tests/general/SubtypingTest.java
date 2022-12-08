@@ -6,11 +6,30 @@ import org.checkerframework.checker.linear.qual.Unique;
 
 class SubtypingTest {
 
-    // full states are [initialized, state2, state3, state4], after get all of this
-    // it can do nothing with the security random.
-    // For example:
-    // default state is {}, {initialized} means cannot be intizalied again,
-    // similarly, state2 means cannot be state2 again
+    void testCommon(
+            @Unique({"a"}) String a,
+            @Unique({"b"}) String b,
+            @Shared({"c"}) String c,
+            @Shared({"d"}) String d) {
+        // Test @Unique
+        @Unique({})
+        String x;
+        // allowed
+        x = a;
+        // test reflextivity
+        @Unique({"a"})
+        String y;
+        y = x;
+        // not allowed
+        // ::error: (assignment.type.incompatible)
+        y = b;
+        // Test @Shared
+        // allowed
+        c = y;
+        // alowed
+        c = d;
+    }
+
     void test(@Unique({}) String x, @Unique({"initialized"}) String y, @Shared String z) {
         String a;
         a = null;
