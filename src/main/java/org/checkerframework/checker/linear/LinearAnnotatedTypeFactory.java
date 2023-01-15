@@ -6,6 +6,7 @@ import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
+import org.checkerframework.checker.linear.qual.Bottom;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -22,6 +23,8 @@ import org.checkerframework.javacutil.TreeUtils;
 public class LinearAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
 
+    /** The @{@link Bottom} annotation. */
+    protected final AnnotationMirror BOTTOM = AnnotationBuilder.fromClass(elements, Bottom.class);
     /** The @{@link Disappear} annotation. */
     protected final AnnotationMirror DISAPPEAR =
             AnnotationBuilder.fromClass(elements, Disappear.class);
@@ -72,12 +75,22 @@ public class LinearAnnotatedTypeFactory
         // 2.@Unique({}) is the super type of other @Unique with any elements
         @Override
         public boolean isSubtype(AnnotationMirror subtype, AnnotationMirror supertype) {
-
+            // for top and bottom
+            // TODO: shared may have elements in it.
             if (AnnotationUtils.areSameByName(supertype, SHARED)
-                    || AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
+                    || AnnotationUtils.areSameByName(subtype, BOTTOM)) {
+                return true;
+            }
+            // for unique and disappear
+            if (AnnotationUtils.areSameByName(supertype, UNIQUE)
+                    && AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
                 return true;
             }
             if (AnnotationUtils.areSameByName(subtype, supertype)) {
+                // for both disappear
+                if (AnnotationUtils.areSameByName(subtype, DISAPPEAR)) {
+                    return true;
+                }
                 if (AnnotationUtils.areSameByName(subtype, UNIQUE)) {
                     List<String> supertypeElementList =
                             AnnotationUtils.getElementValueArray(

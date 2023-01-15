@@ -1,5 +1,9 @@
 # Benchmarks
 
+## Run Benchmarks
+
+In project root dir, run command `./scripts/build.sh androidKeyStoreProject1.yml`
+
 ## [rocketmq-streams](https://github.com/apache/rocketmq-streams.git)
 
 ### Error Usage
