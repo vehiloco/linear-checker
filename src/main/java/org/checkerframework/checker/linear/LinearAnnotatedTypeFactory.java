@@ -117,10 +117,43 @@ public class LinearAnnotatedTypeFactory
         public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
             return a2;
         }
-
+        // 1. shared and shared 2.shared and unique 3. shared and disappear 4.shared and btm
+        // 4. unique and unique 5. unique and disappear 6.unique and btm
+        // 7. disappear and disappear 8. disappear and btm 9.btm and btm
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return a2;
+            // 4. unique and unique 5. unique and disappear
+            // 7. disappear and disappear
+            if (AnnotationUtils.areSameByName(a1, SHARED)
+                    || AnnotationUtils.areSameByName(a2, SHARED)) {
+                return SHARED;
+            }
+            if (AnnotationUtils.areSameByName(a1, BOTTOM)) {
+                return a2;
+            }
+            if (AnnotationUtils.areSameByName(a2, BOTTOM)) {
+                return a1;
+            }
+            // TODO: think about type states
+            if (AnnotationUtils.areSameByName(a1, UNIQUE)
+                    && AnnotationUtils.areSameByName(a2, UNIQUE)) {
+                return UNIQUE;
+            }
+            if (AnnotationUtils.areSameByName(a1, DISAPPEAR)
+                    && AnnotationUtils.areSameByName(a2, DISAPPEAR)) {
+                return DISAPPEAR;
+            }
+            if (AnnotationUtils.areSameByName(a1, UNIQUE)
+                    && AnnotationUtils.areSameByName(a2, DISAPPEAR)) {
+                return UNIQUE;
+            }
+            // TODO: think about this.
+            if (AnnotationUtils.areSameByName(a1, DISAPPEAR)
+                    && AnnotationUtils.areSameByName(a2, UNIQUE)) {
+                return UNIQUE;
+            }
+            // TODO: check default return
+            return SHARED;
         }
     }
 }
