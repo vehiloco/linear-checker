@@ -115,11 +115,34 @@ public class LinearAnnotatedTypeFactory
 
         @Override
         public AnnotationMirror greatestLowerBound(AnnotationMirror a1, AnnotationMirror a2) {
-            return a2;
+            // 1. shared and shared 2.shared and unique 3. shared and disappear 4.shared and btm
+            // 4. unique and unique 5. unique and disappear 6.unique and btm
+            // 7. disappear and disappear 8. disappear and btm 9.btm and btm
+            if (AnnotationUtils.areSameByName(a1, BOTTOM)
+                    || AnnotationUtils.areSameByName(a2, BOTTOM)) {
+                return BOTTOM;
+            }
+            if (AnnotationUtils.areSameByName(a1, SHARED)) {
+                return a2;
+            }
+            if (AnnotationUtils.areSameByName(a2, SHARED)) {
+                return a1;
+            }
+            // TODO: think about type states, this may cause a serious bug.
+            if (AnnotationUtils.areSameByName(a1, UNIQUE)
+                    && AnnotationUtils.areSameByName(a2, UNIQUE)) {
+                return a2;
+            }
+            // TODO: also think about this
+            if (AnnotationUtils.areSameByName(a1, UNIQUE)
+                            && AnnotationUtils.areSameByName(a2, DISAPPEAR)
+                    || AnnotationUtils.areSameByName(a1, DISAPPEAR)
+                            && AnnotationUtils.areSameByName(a2, UNIQUE)) {
+                return DISAPPEAR;
+            }
+            return BOTTOM;
         }
-        // 1. shared and shared 2.shared and unique 3. shared and disappear 4.shared and btm
-        // 4. unique and unique 5. unique and disappear 6.unique and btm
-        // 7. disappear and disappear 8. disappear and btm 9.btm and btm
+
         @Override
         public AnnotationMirror leastUpperBound(AnnotationMirror a1, AnnotationMirror a2) {
             // 4. unique and unique 5. unique and disappear
