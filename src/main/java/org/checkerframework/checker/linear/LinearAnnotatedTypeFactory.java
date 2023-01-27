@@ -131,7 +131,17 @@ public class LinearAnnotatedTypeFactory
             // TODO: think about type states, this may cause a serious bug.
             if (AnnotationUtils.areSameByName(a1, UNIQUE)
                     && AnnotationUtils.areSameByName(a2, UNIQUE)) {
-                return a2;
+                List<String> a1ElementList =
+                        AnnotationUtils.getElementValueArray(a1, "value", String.class, true);
+                List<String> a2ElementList =
+                        AnnotationUtils.getElementValueArray(a2, "value", String.class, true);
+                if (a1ElementList.size() == 0) {
+                    return a2;
+                } else if (a2ElementList.size() == 0) {
+                    return a1;
+                } else {
+                    return a2;
+                }
             }
             // TODO: also think about this
             if (AnnotationUtils.areSameByName(a1, UNIQUE)
