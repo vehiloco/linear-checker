@@ -98,6 +98,9 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         Node lhs = n.getTarget();
         CFStore store = in.getRegularStore();
         CFValue rhsValue = in.getValueOfSubNode(rhs);
+        if (rhsValue == null) {
+            return super.visitAssignment(n, in);
+        }
         Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
         Set<AnnotationMirror> newRhsSet = AnnotationUtils.createAnnotationSet();
         newRhsSet.add(atypeFactory.DISAPPEAR);
