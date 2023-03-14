@@ -38,8 +38,10 @@ class SubtypingTest {
         b = y;
         // ::error: (disappear.assignment.not.allowed)
         b = y;
-        //        // ::error: (unique.parameter.not.allowed)
-        //        testInvocation(y);
+        testInvocation(b);
+        // TODO: think about a new error key
+        // ::error: (unique.parameter.not.allowed)
+        testInvocation(y);
         // ::error: (disappear.assignment.not.allowed)
         b = y;
 
@@ -48,7 +50,7 @@ class SubtypingTest {
         bytesIV = x;
     }
 
-    void testInvocation(String x2) {
+    void testInvocation(@Unique({"initialized"}) String x2) {
         String b2;
         b2 = x2;
         return;
