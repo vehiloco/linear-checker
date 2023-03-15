@@ -140,6 +140,7 @@ public class LinearAnnotatedTypeFactory
                 } else if (a2ElementList.size() == 0) {
                     return a1;
                 } else {
+                    // TODO: This does not make sense, or I can change the framework.
                     return a2;
                 }
             }

@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import org.checkerframework.checker.linear.qual.*;
+import org.checkerframework.dataflow.analysis.RegularTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.*;
@@ -167,8 +168,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 if (oldLhsValue != null) {
                     store.updateForAssignment(lhs, oldLhsValue);
                 }
-                //                superResult.setResultValue(newRhsValue);
-                break;
+                return new RegularTransferResult(null, store);
             }
         }
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
