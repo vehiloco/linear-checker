@@ -24,32 +24,43 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     public boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
-        // update rhs value
-        if (node instanceof AssignmentNode) {
-            Node lhsNode = ((AssignmentNode) node).getTarget();
-            if (((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
-                CFValue lhsOldValue = nodeValues.get(lhsNode);
-                if (lhsOldValue == null
-                        && transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
-                                != null) {
-                    // search value from store
-                    nodeValues.put(
-                            lhsNode,
-                            transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode));
-                }
-            }
-            if (((AssignmentNode) node).getTarget() instanceof FieldAccessNode) {
-                if (newVal != null) {
-                    nodeValues.put(
-                            lhsNode,
-                            transferResult.getRegularStore().getValue((FieldAccessNode) lhsNode));
-                }
-            }
-        }
+        // update lhs value
+        // TODO: there is a bug, the lhs node should be updated later, think about a way to do it.
+        //        if (node instanceof AssignmentNode) {
+        //
+        //        }
 
         if (newVal != null) {
             CFValue oldVal = nodeValues.get(node);
             if (node instanceof AssignmentNode) {
+
+                // update lhs value
+                Node lhsNode = ((AssignmentNode) node).getTarget();
+                if (((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
+                    CFValue lhsOldValue = nodeValues.get(lhsNode);
+                    if (lhsOldValue == null
+                            && transferResult
+                                            .getRegularStore()
+                                            .getValue((LocalVariableNode) lhsNode)
+                                    != null) {
+                        // search value from store
+                        nodeValues.put(
+                                lhsNode,
+                                transferResult
+                                        .getRegularStore()
+                                        .getValue((LocalVariableNode) lhsNode));
+                    }
+                }
+                if (((AssignmentNode) node).getTarget() instanceof FieldAccessNode) {
+                    if (newVal != null) {
+                        nodeValues.put(
+                                lhsNode,
+                                transferResult
+                                        .getRegularStore()
+                                        .getValue((FieldAccessNode) lhsNode));
+                    }
+                }
+
                 Node rhsNode = ((AssignmentNode) node).getExpression();
                 if (rhsNode instanceof LocalVariableNode) {
                     oldVal = nodeValues.get(rhsNode);

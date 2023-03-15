@@ -53,7 +53,6 @@ class SubtypingTest {
         String r;
         r = this.invocation(y);
         // :: error: (disappear.arg.not.allowed)
-        // :: error: (disappear.assignment.not.allowed)
         r = this.invocation(x);
     }
 
