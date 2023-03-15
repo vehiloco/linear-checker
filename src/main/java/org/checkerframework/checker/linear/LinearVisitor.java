@@ -63,18 +63,12 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     @Override
     public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-        //        List<? extends ExpressionTree> args = node.getArguments();
-        //        // Prevent @Disappear being used as a parameter
-        //        for (int i = 0; i < args.size(); i++) {
-        //            AnnotatedTypeMirror argTypeMirror =
-        // atypeFactory.getAnnotatedType(args.get(i));
-        //            AnnotationMirror argAnnotationMirror =
-        // argTypeMirror.getAnnotation(Disappear.class);
-        //            if (argAnnotationMirror != null
-        //                    && AnnotationUtils.areSameByName(argAnnotationMirror, DISAPPEAR)) {
-        //                checker.reportError(args.get(i), "unique.parameter.not.allowed");
-        //            }
-        //        }
+        List<? extends ExpressionTree> args = node.getArguments();
+        for (int i = 0; i < args.size(); i++) {
+            if (atypeFactory.getAnnotationMirror(args.get(i), Disappear.class) != null) {
+                checker.reportError(args.get(i), "disappear.arg.not.allowed");
+            }
+        }
         return super.visitMethodInvocation(node, p);
     }
 

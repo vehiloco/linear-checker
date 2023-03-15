@@ -1,19 +1,23 @@
 package general;
 
-import org.checkerframework.checker.linear.qual.Shared;
-import org.checkerframework.checker.linear.qual.Unique;
+import org.checkerframework.checker.linear.qual.*;
 
 class SubtypingTest {
+
+    @Shared String f;
+    // TODO: should have error here
+    @Unique String u;
 
     void testAssignment(
             @Unique({"a"}) String a,
             @Unique({"b"}) String b,
             @Shared({"c"}) String c,
             @Shared({"d"}) String d) {
-        // TODO: T-assign-shared, x should be @Shared({"a"}) after being assignment;
+        // T-assign-shared, shared should be @Shared({"c"}) after being assignment;
         @Shared({})
         String shared;
         shared = c;
+        // TODO: T-assign-shared, should shared be @Shared({"c", "d"})?
         shared = d;
         @Unique String unique;
         // :: error: (assignment.type.incompatible)
@@ -21,9 +25,40 @@ class SubtypingTest {
         unique = a;
         // :: error: (disappear.assignment.not.allowed)
         unique = a;
+        // :: error: (assignment.type.incompatible)
         unique = b;
-        // T-assign-U Unique to Shared
+        // T-assign-U Unique to Shared, TODO: why unique to shared we keep all states?
         shared = unique;
+    }
+
+    void testFieldUpdate(@Unique({"a"}) String a, @Shared({"c"}) String c) {
+        // T-update-u, f shoulle be @shared({"a"})
+        this.f = a;
+        // :: error: (disappear.assignment.not.allowed)
+        this.f = a;
+        // TODO: T-update-shared, should shared be @Shared({"c", "d"})?
+        this.f = c;
+    }
+
+    @Disappear
+    // :: error: disappear.parameter.not.allowed
+    // :: error: disappear.return.not.allowed
+    String testMethodDeclaration(@Disappear String a) {
+        return a;
+    }
+
+    void testMethodInvocation(@Unique String x) {
+        @Unique String y;
+        y = x;
+        String r;
+        r = this.invocation(y);
+        // :: error: (disappear.arg.not.allowed)
+        // :: error: (disappear.assignment.not.allowed)
+        r = this.invocation(x);
+    }
+
+    String invocation(String a) {
+        return a;
     }
 
     //    void testCommon(
