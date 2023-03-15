@@ -1,12 +1,10 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodInvocationTree;
-import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.*;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeKind;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
@@ -16,6 +14,7 @@ import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.TreeUtils;
 
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
@@ -35,6 +34,19 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     public LinearVisitor(BaseTypeChecker checker) {
         super(checker);
         env = checker.getProcessingEnvironment();
+    }
+
+    // field can only be shared
+    @Override
+    public Void visitVariable(VariableTree node, Void p) {
+        ElementKind varKind = TreeUtils.elementFromDeclaration(node).getKind();
+        if (varKind == ElementKind.FIELD) {
+
+            if (atypeFactory.getAnnotationMirror(node, Shared.class) == null) {
+                checker.reportError(node, "field.type.incompatible");
+            }
+        }
+        return super.visitVariable(node, p);
     }
 
     // Parameter can not be btm, return type can not be btm
