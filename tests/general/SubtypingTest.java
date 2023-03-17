@@ -38,6 +38,8 @@ class SubtypingTest {
         this.f = a;
         // TODO: T-update-shared, should shared be @Shared({"c", "d"})?
         this.f = c;
+        @Shared String shared;
+        shared = this.f;
     }
 
     @Disappear
