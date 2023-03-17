@@ -13,11 +13,15 @@ import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearTransfer> {
 
+    private final LinearAnnotatedTypeFactory atypeFactory;
+
     public LinearAnalysis(BaseTypeChecker checker, LinearAnnotatedTypeFactory factory) {
         super(checker, factory);
+        this.atypeFactory = factory;
     }
 
     @Override
@@ -29,11 +33,10 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
         if (node instanceof AssignmentNode) {
             // update lhs value
             Node lhsNode = ((AssignmentNode) node).getTarget();
-            if (((AssignmentNode) node).getTarget() instanceof LocalVariableNode) {
-                CFValue lhsOldValue = nodeValues.get(lhsNode);
-                if (lhsOldValue == null
-                        && transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
-                                != null) {
+            if (lhsNode instanceof LocalVariableNode) {
+
+                if (transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
+                        != null) {
                     // search value from store
                     nodeValues.put(
                             lhsNode,
@@ -41,11 +44,11 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                 }
             }
             if (((AssignmentNode) node).getTarget() instanceof FieldAccessNode) {
-                if (newVal != null) {
-                    nodeValues.put(
-                            lhsNode,
-                            transferResult.getRegularStore().getValue((FieldAccessNode) lhsNode));
-                }
+                //                if (newVal != null) {
+                nodeValues.put(
+                        lhsNode,
+                        transferResult.getRegularStore().getValue((FieldAccessNode) lhsNode));
+                //                }
             }
         }
 
@@ -79,5 +82,29 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     public CFValue createAbstractValue(
             Set<AnnotationMirror> annotations, TypeMirror underlyingType) {
         return defaultCreateAbstractValue(this, annotations, underlyingType);
+    }
+
+    protected boolean canUpdate(Node lhsNode) {
+        CFValue lhsValue = nodeValues.get(lhsNode);
+        //        if (lhsNode == null) {
+        //            return false;
+        //        }
+        // don't update if both lhs and rhs are Unique
+        if (lhsValue != null) {
+            for (AnnotationMirror lhsAnno : lhsValue.getAnnotations()) {
+                if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, lhsAnno)) {
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    return false;
+                    //                    for (AnnotationMirror rhsAnno : rhsValue.getAnnotations())
+                    // {
+                    //                        if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE,
+                    // rhsAnno)) {
+                    //                            return false;
+                    //                        }
+                    //                    }
+                }
+            }
+        }
+        return true;
     }
 }
