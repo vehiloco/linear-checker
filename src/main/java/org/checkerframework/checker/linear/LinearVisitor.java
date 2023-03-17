@@ -54,6 +54,13 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     public Void visitMethod(MethodTree node, Void p) {
         AnnotatedTypeMirror.AnnotatedExecutableType methodType =
                 atypeFactory.getAnnotatedType(node).deepCopy();
+        // Type check receiver
+        VariableTree receiverTree = node.getReceiverParameter();
+        if (receiverTree != null
+                && atypeFactory.getAnnotationMirror(receiverTree, Disappear.class) != null) {
+            checker.reportError(node, "disappear.receiver.not.allowed");
+        }
+
         // type check parameters
         List<AnnotatedTypeMirror> parameterTypes = methodType.getParameterTypes();
         for (int i = 0; i < parameterTypes.size(); i++) {

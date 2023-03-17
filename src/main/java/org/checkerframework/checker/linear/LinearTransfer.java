@@ -63,8 +63,31 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 analysis.createAbstractValue(newRhsSet, rhsValue.getUnderlyingType());
 
         Set<AnnotationMirror> rhsAnnotations = rhsValue.getAnnotations();
+        Set<AnnotationMirror> lhsAnnotations = null;
+        if (lhsValue != null) {
+            lhsAnnotations = lhsValue.getAnnotations();
+        }
         for (AnnotationMirror rhsAnnoMirror : rhsAnnotations) {
-            // TODO: there is a case for shared
+            // merge shared states
+            if (AnnotationUtils.areSameByName(atypeFactory.SHARED, rhsAnnoMirror)) {
+                if (lhsAnnotations != null) {
+                    for (AnnotationMirror lhsAnnoMirror : lhsAnnotations) {
+                        if (AnnotationUtils.areSameByName(atypeFactory.SHARED, lhsAnnoMirror)) {
+                            List<String> lhsStatesList =
+                                    AnnotationUtils.getElementValueArray(
+                                            lhsAnnoMirror, "value", String.class, true);
+                            List<String> rhsStatesList =
+                                    AnnotationUtils.getElementValueArray(
+                                            rhsAnnoMirror, "value", String.class, true);
+                            CFValue newLhsValue =
+                                    buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
+                            store.updateForAssignment(lhs, newLhsValue);
+                            return new RegularTransferResult(null, store);
+                        }
+                    }
+                }
+            }
+
             if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, rhsAnnoMirror)) {
                 // Set RHS node value to disappear if it is Unique before assignment
                 store.updateForAssignment(rhs, rhsValueDisappear);
@@ -72,8 +95,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 // To use the latest value of lhs, first check whether oldLhsValue exists.
                 List<String> lhsStatesList = null;
                 Tree lhsTree = lhs.getTree();
-                if (lhsValue != null) {
-                    Set<AnnotationMirror> lhsAnnotations = lhsValue.getAnnotations();
+                if (lhsAnnotations != null) {
                     for (AnnotationMirror lhsAnnoMirror : lhsAnnotations) {
                         if (AnnotationUtils.areSameByName(atypeFactory.SHARED, lhsAnnoMirror)) {
                             lhsStatesList =
@@ -96,18 +118,8 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                     List<String> rhsStatesList =
                             AnnotationUtils.getElementValueArray(
                                     rhsAnnoMirror, "value", String.class, true);
-                    lhsStatesList.addAll(rhsStatesList);
-                    // create new lhs value and update
-                    AnnotationMirror newLhsAnnoMirror;
-                    AnnotationBuilder builder = new AnnotationBuilder(env, Shared.class);
-                    builder.setValue("value", lhsStatesList);
-                    newLhsAnnoMirror = builder.build();
-                    Set<AnnotationMirror> newLhsSet = AnnotationUtils.createAnnotationSet();
-                    newLhsSet.add(newLhsAnnoMirror);
                     CFValue newLhsValue =
-                            analysis.createAbstractValue(
-                                    newLhsSet,
-                                    atypeFactory.getAnnotatedType(lhsTree).getUnderlyingType());
+                            buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
                     store.updateForAssignment(lhs, newLhsValue);
                 }
                 break;
@@ -122,6 +134,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             }
         }
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
+
         return superResult;
     }
 
@@ -143,5 +156,17 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             return;
         }
         super.processCommonAssignment(in, lhs, rhs, store, rhsValue);
+    }
+
+    protected CFValue buildNewStates(List<String> lhsStates, List<String> rhsStates, Tree tree) {
+        lhsStates.addAll(rhsStates);
+        AnnotationMirror newLhsAnnoMirror;
+        AnnotationBuilder builder = new AnnotationBuilder(env, Shared.class);
+        builder.setValue("value", lhsStates);
+        newLhsAnnoMirror = builder.build();
+        Set<AnnotationMirror> newLhsSet = AnnotationUtils.createAnnotationSet();
+        newLhsSet.add(newLhsAnnoMirror);
+        return analysis.createAbstractValue(
+                newLhsSet, atypeFactory.getAnnotatedType(tree).getUnderlyingType());
     }
 }
