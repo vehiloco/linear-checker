@@ -60,6 +60,12 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                     oldVal = nodeValues.get(rhsNode);
                     nodeValues.put(rhsNode, newVal);
                 }
+                if (rhsNode instanceof FieldAccessNode) {
+                    oldVal = nodeValues.get(rhsNode);
+                    nodeValues.put(
+                            rhsNode,
+                            transferResult.getRegularStore().getValue((FieldAccessNode) rhsNode));
+                }
             } else {
                 nodeValues.put(node, newVal);
             }

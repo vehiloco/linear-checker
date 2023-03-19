@@ -35,9 +35,14 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             AssignmentNode n, TransferInput<CFValue, CFStore> in) {
         Node rhs = n.getExpression();
         Node lhs = n.getTarget();
+        CFStore store = in.getRegularStore();
+        // why don't we get value from the store first?
         CFValue rhsValue = in.getValueOfSubNode(rhs);
         if (rhsValue == null) {
             return super.visitAssignment(n, in);
+        }
+        if (rhs instanceof FieldAccessNode && store.getValue((FieldAccessNode) rhs) != null) {
+            rhsValue = store.getValue((FieldAccessNode) rhs);
         }
         // Check rhs type, if rhs is not array,field access or local variable, just return super
         // result
@@ -49,13 +54,12 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         }
 
         CFValue lhsValue = null;
-        if (n.getTarget() instanceof LocalVariableNode) {
+        if (lhs instanceof LocalVariableNode) {
             lhsValue = in.getRegularStore().getValue((LocalVariableNode) lhs);
         }
-        if (n.getTarget() instanceof FieldAccessNode) {
+        if (lhs instanceof FieldAccessNode) {
             lhsValue = in.getRegularStore().getValue((FieldAccessNode) lhs);
         }
-        CFStore store = in.getRegularStore();
 
         Set<AnnotationMirror> newRhsSet = AnnotationUtils.createAnnotationSet();
         newRhsSet.add(atypeFactory.DISAPPEAR);
@@ -67,24 +71,36 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         if (lhsValue != null) {
             lhsAnnotations = lhsValue.getAnnotations();
         }
+        // process
         for (AnnotationMirror rhsAnnoMirror : rhsAnnotations) {
             // merge shared states
             if (AnnotationUtils.areSameByName(atypeFactory.SHARED, rhsAnnoMirror)) {
-                if (lhsAnnotations != null) {
-                    for (AnnotationMirror lhsAnnoMirror : lhsAnnotations) {
-                        if (AnnotationUtils.areSameByName(atypeFactory.SHARED, lhsAnnoMirror)) {
-                            List<String> lhsStatesList =
-                                    AnnotationUtils.getElementValueArray(
-                                            lhsAnnoMirror, "value", String.class, true);
-                            List<String> rhsStatesList =
-                                    AnnotationUtils.getElementValueArray(
-                                            rhsAnnoMirror, "value", String.class, true);
-                            CFValue newLhsValue =
-                                    buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
-                            store.updateForAssignment(lhs, newLhsValue);
-                            return new RegularTransferResult(null, store);
+                if (atypeFactory.getAnnotationMirror(lhs.getTree(), Shared.class) != null) {
+                    List<String> rhsStatesList =
+                            AnnotationUtils.getElementValueArray(
+                                    rhsAnnoMirror, "value", String.class, true);
+                    AnnotationMirror lhsAM =
+                            atypeFactory.getAnnotationMirror(lhs.getTree(), Shared.class);
+                    if (lhsAM == null) {
+                        break;
+                    }
+                    if (lhsAnnotations != null) {
+                        for (AnnotationMirror lhsAnnotationMirror : lhsAnnotations) {
+                            if (AnnotationUtils.areSameByName(
+                                    atypeFactory.SHARED, lhsAnnotationMirror)) {
+                                lhsAM = lhsAnnotationMirror;
+                                break;
+                            }
                         }
                     }
+                    List<String> lhsStatesList =
+                            AnnotationUtils.getElementValueArray(
+                                    lhsAM, "value", String.class, true);
+
+                    CFValue newLhsValue =
+                            buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
+                    store.updateForAssignment(lhs, newLhsValue);
+                    return new RegularTransferResult(null, store);
                 }
             }
 
