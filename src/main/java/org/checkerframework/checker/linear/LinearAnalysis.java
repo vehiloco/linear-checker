@@ -1,9 +1,11 @@
 package org.checkerframework.checker.linear;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeMirror;
+import org.checkerframework.checker.linear.qual.*;
 import org.checkerframework.common.basetype.BaseTypeChecker;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.AssignmentNode;
@@ -28,11 +30,18 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     public boolean updateNodeValues(Node node, TransferResult<CFValue, CFStore> transferResult) {
         CFValue newVal = transferResult.getResultValue();
         boolean nodeValueChanged = false;
-        // update lhs value
+        // update lhs value, do not update lhs if both lhs and rhs are @unique
+
         // TODO: there is a bug, the lhs node should be updated later, think about a way to do it.
         if (node instanceof AssignmentNode) {
+            Node rhsNode = ((AssignmentNode) node).getExpression();
             // update lhs value
             Node lhsNode = ((AssignmentNode) node).getTarget();
+
+            //            CFValue lhsValue =
+            //                    transferResult.getRegularStore().getValue((LocalVariableNode)
+            // lhsNode);
+            //            if (canUpdate(lhsNode, rhsNode, lhsValue)) {
             if (lhsNode instanceof LocalVariableNode) {
 
                 if (transferResult.getRegularStore().getValue((LocalVariableNode) lhsNode)
@@ -44,12 +53,11 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                 }
             }
             if (((AssignmentNode) node).getTarget() instanceof FieldAccessNode) {
-                //                if (newVal != null) {
                 nodeValues.put(
                         lhsNode,
                         transferResult.getRegularStore().getValue((FieldAccessNode) lhsNode));
-                //                }
             }
+            //            }
         }
 
         if (newVal != null) {
@@ -90,24 +98,21 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
         return defaultCreateAbstractValue(this, annotations, underlyingType);
     }
 
-    protected boolean canUpdate(Node lhsNode) {
-        CFValue lhsValue = nodeValues.get(lhsNode);
-        //        if (lhsNode == null) {
-        //            return false;
-        //        }
-        // don't update if both lhs and rhs are Unique
-        if (lhsValue != null) {
+    protected boolean canUpdate(Node lhsNode, Node rhsNode, CFValue lhsValue) {
+        AnnotationMirror lhsAMUnique =
+                atypeFactory.getAnnotationMirror(lhsNode.getTree(), Unique.class);
+        AnnotationMirror rhsAMUnique =
+                atypeFactory.getAnnotationMirror(rhsNode.getTree(), Unique.class);
+        if (lhsAMUnique != null && rhsAMUnique != null && lhsValue != null) {
             for (AnnotationMirror lhsAnno : lhsValue.getAnnotations()) {
                 if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, lhsAnno)) {
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    return false;
-                    //                    for (AnnotationMirror rhsAnno : rhsValue.getAnnotations())
-                    // {
-                    //                        if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE,
-                    // rhsAnno)) {
-                    //                            return false;
-                    //                        }
-                    //                    }
+                    List<String> lhsStatesList =
+                            AnnotationUtils.getElementValueArray(
+                                    lhsAnno, "value", String.class, true);
+                    // TODO: hard to check
+                    if (lhsStatesList.size() > 0) {
+                        return true;
+                    }
                 }
             }
         }

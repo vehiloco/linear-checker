@@ -71,39 +71,59 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         if (lhsValue != null) {
             lhsAnnotations = lhsValue.getAnnotations();
         }
-        // process
+        // 1. LHS and RHS are @Shared
         for (AnnotationMirror rhsAnnoMirror : rhsAnnotations) {
             // merge shared states
             if (AnnotationUtils.areSameByName(atypeFactory.SHARED, rhsAnnoMirror)) {
-                if (atypeFactory.getAnnotationMirror(lhs.getTree(), Shared.class) != null) {
-                    List<String> rhsStatesList =
-                            AnnotationUtils.getElementValueArray(
-                                    rhsAnnoMirror, "value", String.class, true);
-                    AnnotationMirror lhsAM =
-                            atypeFactory.getAnnotationMirror(lhs.getTree(), Shared.class);
-                    if (lhsAM == null) {
-                        break;
-                    }
-                    if (lhsAnnotations != null) {
-                        for (AnnotationMirror lhsAnnotationMirror : lhsAnnotations) {
-                            if (AnnotationUtils.areSameByName(
-                                    atypeFactory.SHARED, lhsAnnotationMirror)) {
-                                lhsAM = lhsAnnotationMirror;
-                                break;
-                            }
+                if (lhsAnnotations != null) {
+                    for (AnnotationMirror lhsAnnoMirror : lhsAnnotations) {
+                        if (AnnotationUtils.areSameByName(atypeFactory.SHARED, lhsAnnoMirror)) {
+                            List<String> lhsStatesList =
+                                    AnnotationUtils.getElementValueArray(
+                                            lhsAnnoMirror, "value", String.class, true);
+                            List<String> rhsStatesList =
+                                    AnnotationUtils.getElementValueArray(
+                                            rhsAnnoMirror, "value", String.class, true);
+                            CFValue newLhsValue =
+                                    buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
+                            store.updateForAssignment(lhs, newLhsValue);
+                            return new RegularTransferResult(null, store);
                         }
                     }
-                    List<String> lhsStatesList =
-                            AnnotationUtils.getElementValueArray(
-                                    lhsAM, "value", String.class, true);
-
-                    CFValue newLhsValue =
-                            buildNewStates(lhsStatesList, rhsStatesList, lhs.getTree());
-                    store.updateForAssignment(lhs, newLhsValue);
-                    return new RegularTransferResult(null, store);
                 }
+                //                if (atypeFactory.getAnnotationMirror(lhs.getTree(), Shared.class)
+                // != null) {
+                //                    List<String> rhsStatesList =
+                //                            AnnotationUtils.getElementValueArray(
+                //                                    rhsAnnoMirror, "value", String.class, true);
+                //                    AnnotationMirror lhsAM =
+                //                            atypeFactory.getAnnotationMirror(lhs.getTree(),
+                // Shared.class);
+                //                    //                    if (lhsAM == null) {
+                //                    //                        break;
+                //                    //                    }
+                //                    if (lhsAnnotations != null) {
+                //                        for (AnnotationMirror lhsAnnotationMirror :
+                // lhsAnnotations) {
+                //                            if (AnnotationUtils.areSameByName(
+                //                                    atypeFactory.SHARED, lhsAnnotationMirror)) {
+                //                                lhsAM = lhsAnnotationMirror;
+                //                                break;
+                //                            }
+                //                        }
+                //                    }
+                //                    List<String> lhsStatesList =
+                //                            AnnotationUtils.getElementValueArray(
+                //                                    lhsAM, "value", String.class, true);
+                //
+                //                    CFValue newLhsValue =
+                //                            buildNewStates(lhsStatesList, rhsStatesList,
+                // lhs.getTree());
+                //                    store.updateForAssignment(lhs, newLhsValue);
+                //                }
             }
 
+            // 2. RHS is @Unique
             if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, rhsAnnoMirror)) {
                 // Set RHS node value to disappear if it is Unique before assignment
                 store.updateForAssignment(rhs, rhsValueDisappear);
@@ -118,6 +138,15 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                     AnnotationUtils.getElementValueArray(
                                             lhsAnnoMirror, "value", String.class, true);
                             break;
+                        }
+                        if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, lhsAnnoMirror)) {
+
+                            if (AnnotationUtils.getElementValueArray(
+                                                    lhsAnnoMirror, "value", String.class, true)
+                                            .size()
+                                    > 0) {
+                                return new RegularTransferResult(null, store);
+                            }
                         }
                     }
                 } else {
@@ -141,7 +170,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 break;
             }
 
-            // let new assignment take effect later. keep lhs value as it is in input
+            // Don't update lhs if rhs value is @shared
             if (AnnotationUtils.areSameByName(this.atypeFactory.DISAPPEAR, rhsAnnoMirror)) {
                 if (lhsValue != null) {
                     store.updateForAssignment(lhs, lhsValue);

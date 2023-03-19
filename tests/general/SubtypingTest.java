@@ -17,7 +17,7 @@ class SubtypingTest {
         @Shared({})
         String shared;
         shared = c;
-        // TODO: T-assign-shared, should shared be @Shared({"c", "d"})?
+        // T-assign-shared, should shared be @Shared({"c", "d"})?
         shared = d;
         @Unique String unique;
         // :: error: (assignment.type.incompatible)
@@ -25,8 +25,6 @@ class SubtypingTest {
         unique = a;
         // :: error: (disappear.assignment.not.allowed)
         unique = a;
-        // :: error: (assignment.type.incompatible)
-        unique = b;
         // T-assign-U Unique to Shared, TODO: why unique to shared we keep all states?
         shared = unique;
     }
@@ -52,12 +50,16 @@ class SubtypingTest {
     void testMethodInvocation(@Unique String x) {
         @Unique String y;
         y = x;
-        String r;
-        r = this.invocation(y);
+        String r1;
+        r1 = this.invocation(y);
         // :: error: (disappear.arg.not.allowed)
-        r = this.invocation(x);
+        r1 = this.invocation(x);
+        @Unique String r2;
+        // :: error: (assignment.type.incompatible)
+        r2 = this.invocation("string");
     }
 
+    @Shared
     String invocation(String a) {
         return a;
     }
