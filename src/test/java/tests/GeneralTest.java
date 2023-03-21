@@ -13,7 +13,7 @@ public class GeneralTest extends CheckerFrameworkPerDirectoryTest {
                 LinearChecker.class,
                 "general",
                 "-Anomsgtext",
-                "-Astubs=/Users/alexliu/projects/linear-checker/src/main/java/org/checkerframework/checker/linear");
+                "-Astubs=IvParameterSpec.astub");
     }
 
     @Parameters
