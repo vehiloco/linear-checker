@@ -1,10 +1,13 @@
 package org.checkerframework.checker.linear;
 
+import java.io.File;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 import org.checkerframework.checker.linear.qual.Bottom;
 import org.checkerframework.checker.linear.qual.Disappear;
@@ -18,7 +21,7 @@ import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.TreeUtils;
+import org.yaml.snakeyaml.Yaml;
 
 public class LinearAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
@@ -33,12 +36,12 @@ public class LinearAnnotatedTypeFactory
     /** The @{@link Shared} annotation. */
     protected final AnnotationMirror SHARED = AnnotationBuilder.fromClass(elements, Shared.class);
 
-    protected final ExecutableElement uniqueElements =
-            TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);;
+    private Map<String, Object> atomoton;
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker, true);
         this.postInit();
+        parseAtomotan();
     }
 
     //    @Override
@@ -52,6 +55,23 @@ public class LinearAnnotatedTypeFactory
     //            super(qualifierClasses, processingEnv);
     //        }
     //    }
+
+    protected void parseAtomotan() {
+        String atomotansOption = checker.getOption("atomotans");
+        if (atomotansOption != null) {
+            Yaml yaml = new Yaml();
+            // parse atomotan yaml file and store it into the field
+            List<String> files = Arrays.asList(atomotansOption.split(File.pathSeparator));
+            for (String file : files) {
+                InputStream inputStream =
+                        LinearAnnotatedTypeFactory.class.getResourceAsStream(file);
+                if (inputStream != null) {
+                    Map<String, Object> obj = (Map<String, Object>) yaml.load(inputStream);
+                    System.out.println(obj);
+                }
+            }
+        }
+    }
 
     @Override
     protected QualifierHierarchy createQualifierHierarchy() {
