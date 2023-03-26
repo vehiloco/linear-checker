@@ -2,3 +2,5 @@
   IvParameterSpec:
     - "initialized"
     - "used"
+  nextBytes:
+      - "initialized"

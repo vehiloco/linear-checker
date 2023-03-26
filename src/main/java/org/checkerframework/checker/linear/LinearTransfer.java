@@ -1,19 +1,24 @@
 package org.checkerframework.checker.linear;
 
+import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 import org.checkerframework.checker.linear.qual.*;
 import org.checkerframework.dataflow.analysis.RegularTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.*;
 import org.checkerframework.framework.flow.*;
+import org.checkerframework.framework.util.Contract;
+import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+import org.checkerframework.javacutil.BugInCF;
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 
@@ -210,5 +215,48 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         newLhsSet.add(newAnnoMirror);
         return analysis.createAbstractValue(
                 newLhsSet, atypeFactory.getAnnotatedType(tree).getUnderlyingType());
+    }
+
+    @Override
+    protected void processPostconditions(
+            Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
+        if (executableElement.getSimpleName().toString().equals("super")
+                || executableElement.getSimpleName().toString().equals("<init>")) {
+            super.processPostconditions(n, store, executableElement, tree);
+            return;
+        }
+        if (atypeFactory.atomoton != null) {
+            // Whether the operations are valid
+            if (!atypeFactory.atomoton.containsKey(executableElement.getSimpleName().toString())) {
+                throw new BugInCF(
+                        "invalid atomotan operation %s", executableElement.getSimpleName());
+            }
+            List<String> states =
+                    (List<String>)
+                            atypeFactory.atomoton.get(executableElement.getSimpleName().toString());
+            // Whether the postconditions are valid
+            ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
+            Contract.Postcondition[] postconditions =
+                    contractsUtils
+                            .getPostconditions(executableElement)
+                            .toArray(
+                                    new Contract.Postcondition
+                                            [contractsUtils
+                                                    .getPostconditions(executableElement)
+                                                    .size()]);
+            for (int i = 0; i < postconditions.length; i++) {
+                AnnotationMirror annotationMirror = postconditions[i].annotation;
+                List<String> presentStates =
+                        AnnotationUtils.getElementValueArray(
+                                annotationMirror, "value", String.class, true);
+                for (String state : presentStates) {
+                    if (!states.contains(state)) {
+                        throw new BugInCF(
+                                "invalid atomotan state %s", state);
+                    }
+                }
+            }
+        }
+        super.processPostconditions(n, store, executableElement, tree);
     }
 }

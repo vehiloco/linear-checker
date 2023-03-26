@@ -36,7 +36,7 @@ public class LinearAnnotatedTypeFactory
     /** The @{@link Shared} annotation. */
     protected final AnnotationMirror SHARED = AnnotationBuilder.fromClass(elements, Shared.class);
 
-    private Map<String, Object> atomoton;
+    protected final Map<String, Object> atomoton = parseAtomotan();
 
     public LinearAnnotatedTypeFactory(BaseTypeChecker checker) {
         super(checker, true);
@@ -56,7 +56,7 @@ public class LinearAnnotatedTypeFactory
     //        }
     //    }
 
-    protected void parseAtomotan() {
+    protected Map<String, Object> parseAtomotan() {
         String atomotansOption = checker.getOption("atomotans");
         if (atomotansOption != null) {
             Yaml yaml = new Yaml();
@@ -66,11 +66,11 @@ public class LinearAnnotatedTypeFactory
                 InputStream inputStream =
                         LinearAnnotatedTypeFactory.class.getResourceAsStream(file);
                 if (inputStream != null) {
-                    Map<String, Object> obj = (Map<String, Object>) yaml.load(inputStream);
-                    System.out.println(obj);
+                    return (Map<String, Object>) yaml.load(inputStream);
                 }
             }
         }
+        return null;
     }
 
     @Override
