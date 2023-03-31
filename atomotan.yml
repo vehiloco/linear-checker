@@ -1,6 +1,9 @@
 ---
+  states:
+    - "initialized"
+    - "used"
   IvParameterSpec:
     - "initialized"
     - "used"
   nextBytes:
-      - "initialized"
+    - "initialized"

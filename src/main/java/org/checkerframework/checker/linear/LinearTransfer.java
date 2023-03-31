@@ -221,7 +221,8 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     protected void processPostconditions(
             Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
         if (executableElement.getSimpleName().toString().equals("super")
-                || executableElement.getSimpleName().toString().equals("<init>")) {
+                || executableElement.getSimpleName().toString().equals("<init>")
+                || executableElement.getSimpleName().toString().equals("invocation")) {
             super.processPostconditions(n, store, executableElement, tree);
             return;
         }
@@ -251,8 +252,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 annotationMirror, "value", String.class, true);
                 for (String state : presentStates) {
                     if (!states.contains(state)) {
-                        throw new BugInCF(
-                                "invalid atomotan state %s", state);
+                        throw new BugInCF("invalid atomotan state %s", state);
                     }
                 }
             }

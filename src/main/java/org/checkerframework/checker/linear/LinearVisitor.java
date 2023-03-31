@@ -126,4 +126,25 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         }
         return super.visitAssignment(node, p);
     }
+
+    @Override
+    protected boolean validateType(Tree tree, AnnotatedTypeMirror type) {
+        // Check typestate here
+        AnnotationMirror annotationMirror =
+                type.getAnnotation(Unique.class) != null
+                        ? type.getAnnotation(Unique.class)
+                        : type.getAnnotation(Shared.class);
+        if (atypeFactory.atomoton != null && annotationMirror != null) {
+            List<String> states = (List<String>) atypeFactory.atomoton.get("states");
+            List<String> presentStates =
+                    AnnotationUtils.getElementValueArray(
+                            annotationMirror, "value", String.class, true);
+            for (String state : presentStates) {
+                if (!states.contains(state)) {
+                    checker.reportError(tree, "typestate.invalid", state);
+                }
+            }
+        }
+        return super.validateType(tree, type);
+    }
 }
