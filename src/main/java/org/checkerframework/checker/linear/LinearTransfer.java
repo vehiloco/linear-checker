@@ -4,6 +4,7 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -18,7 +19,6 @@ import org.checkerframework.framework.util.Contract;
 import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
-import org.checkerframework.javacutil.BugInCF;
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 
@@ -220,6 +220,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     @Override
     protected void processPostconditions(
             Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
+        // TODO: this is not good?
         if (executableElement.getSimpleName().toString().equals("super")
                 || executableElement.getSimpleName().toString().equals("<init>")
                 || executableElement.getSimpleName().toString().equals("invocation")) {
@@ -227,15 +228,19 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             return;
         }
         if (atypeFactory.atomoton != null) {
-            // Whether the operations are valid
-            if (!atypeFactory.atomoton.containsKey(executableElement.getSimpleName().toString())) {
-                throw new BugInCF(
-                        "invalid atomotan operation %s", executableElement.getSimpleName());
+            Map<String, Map<String, Map<String, String>>> operations =
+                    (Map<String, Map<String, Map<String, String>>>)
+                            atypeFactory.atomoton.get("operations");
+            // Check operations are invalid
+            if (!operations.containsKey(executableElement.getSimpleName().toString())) {
+                atypeFactory.getChecker().reportError(n, "typestate.operation.invalid");
             }
-            List<String> states =
-                    (List<String>)
-                            atypeFactory.atomoton.get(executableElement.getSimpleName().toString());
-            // Whether the postconditions are valid
+
+            Map<String, Map<String, String>> transition =
+                    operations.get(executableElement.getSimpleName().toString());
+            // Whether preconditions hold
+
+            // Whether the postconditions hold
             ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
             Contract.Postcondition[] postconditions =
                     contractsUtils
@@ -247,13 +252,11 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                                     .size()]);
             for (int i = 0; i < postconditions.length; i++) {
                 AnnotationMirror annotationMirror = postconditions[i].annotation;
-                List<String> presentStates =
+                List<String> postStates =
                         AnnotationUtils.getElementValueArray(
                                 annotationMirror, "value", String.class, true);
-                for (String state : presentStates) {
-                    if (!states.contains(state)) {
-                        throw new BugInCF("invalid atomotan state %s", state);
-                    }
+                if (!postStates.contains(transition.get("after"))) {
+                    atypeFactory.getChecker().reportError(tree, "typestate.operation.invalid");
                 }
             }
         }

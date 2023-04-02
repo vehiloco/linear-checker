@@ -6,8 +6,12 @@
     - "d"
     - "initialized"
     - "used"
-  IvParameterSpec:
-    - "initialized"
-    - "used"
-  nextBytes:
-    - "initialized"
+  operations:
+      IvParameterSpec:
+        package: "java.security.SecureRandom"
+        before: "initialized"
+        after: "used"
+      nextBytes:
+        package: "java.security.SecureRandom"
+        before: "empty"
+        after: "initialized"
