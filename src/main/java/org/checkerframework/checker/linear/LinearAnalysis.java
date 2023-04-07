@@ -2,7 +2,6 @@ package org.checkerframework.checker.linear;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeMirror;
 import org.checkerframework.checker.linear.qual.*;
@@ -15,6 +14,7 @@ import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFStore;
 import org.checkerframework.framework.flow.CFValue;
+import org.checkerframework.javacutil.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearTransfer> {
@@ -93,8 +93,7 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
     }
 
     @Override
-    public CFValue createAbstractValue(
-            Set<AnnotationMirror> annotations, TypeMirror underlyingType) {
+    public CFValue createAbstractValue(AnnotationMirrorSet annotations, TypeMirror underlyingType) {
         return defaultCreateAbstractValue(this, annotations, underlyingType);
     }
 

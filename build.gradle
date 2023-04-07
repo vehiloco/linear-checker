@@ -19,7 +19,7 @@ configurations {
 }
 
 ext.versions = [
-		checkerFramework: "3.25.0-eisop1",
+		checkerFramework: "3.32.0-eisop1",
 ]
 
 sourceCompatibility = 1.8

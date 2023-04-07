@@ -18,6 +18,7 @@ import org.checkerframework.framework.flow.*;
 import org.checkerframework.framework.util.Contract;
 import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
+import org.checkerframework.javacutil.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
@@ -211,7 +212,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             builder.setValue("value", states1);
         }
         newAnnoMirror = builder.build();
-        Set<AnnotationMirror> newLhsSet = AnnotationUtils.createAnnotationSet();
+        AnnotationMirrorSet newLhsSet = new AnnotationMirrorSet();
         newLhsSet.add(newAnnoMirror);
         return analysis.createAbstractValue(
                 newLhsSet, atypeFactory.getAnnotatedType(tree).getUnderlyingType());
