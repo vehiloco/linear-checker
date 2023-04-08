@@ -2,6 +2,7 @@ package org.checkerframework.checker.linear;
 
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
+import com.sun.tools.javac.code.Symbol;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -221,44 +222,41 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     @Override
     protected void processPostconditions(
             Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
-        // TODO: this is not good?
-        if (executableElement.getSimpleName().toString().equals("super")
-                || executableElement.getSimpleName().toString().equals("<init>")
-                || executableElement.getSimpleName().toString().equals("invocation")) {
+        // TODO: if does not match the signature, then return
+        if (atypeFactory.atomoton == null) {
             super.processPostconditions(n, store, executableElement, tree);
             return;
         }
-        if (atypeFactory.atomoton != null) {
-            Map<String, Map<String, Map<String, String>>> operations =
-                    (Map<String, Map<String, Map<String, String>>>)
-                            atypeFactory.atomoton.get("operations");
-            // Check operations are invalid
-            if (!operations.containsKey(executableElement.getSimpleName().toString())) {
-                atypeFactory.getChecker().reportError(n, "typestate.operation.invalid");
-            }
 
-            Map<String, Map<String, String>> transition =
-                    operations.get(executableElement.getSimpleName().toString());
-            // Whether preconditions hold
+        Map<String, Map<String, Map<String, String>>> operations =
+                (Map<String, Map<String, Map<String, String>>>)
+                        atypeFactory.atomoton.get("operations");
+        // Check operations
+        if (!operations.containsKey(
+                ((Symbol.MethodSymbol) executableElement).baseSymbol().toString())) {
+            super.processPostconditions(n, store, executableElement, tree);
+            return;
+        }
 
-            // Whether the postconditions hold
-            ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
-            Contract.Postcondition[] postconditions =
-                    contractsUtils
-                            .getPostconditions(executableElement)
-                            .toArray(
-                                    new Contract.Postcondition
-                                            [contractsUtils
-                                                    .getPostconditions(executableElement)
-                                                    .size()]);
-            for (int i = 0; i < postconditions.length; i++) {
-                AnnotationMirror annotationMirror = postconditions[i].annotation;
-                List<String> postStates =
-                        AnnotationUtils.getElementValueArray(
-                                annotationMirror, "value", String.class, true);
-                if (!postStates.contains(transition.get("after"))) {
-                    atypeFactory.getChecker().reportError(tree, "typestate.operation.invalid");
-                }
+        Map<String, Map<String, String>> transition =
+                operations.get(((Symbol.MethodSymbol) executableElement).baseSymbol().toString());
+        // Whether the postconditions hold
+        ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
+        Contract.Postcondition[] postconditions =
+                contractsUtils
+                        .getPostconditions(executableElement)
+                        .toArray(
+                                new Contract.Postcondition
+                                        [contractsUtils
+                                                .getPostconditions(executableElement)
+                                                .size()]);
+        for (int i = 0; i < postconditions.length; i++) {
+            AnnotationMirror annotationMirror = postconditions[i].annotation;
+            List<String> postStates =
+                    AnnotationUtils.getElementValueArray(
+                            annotationMirror, "value", String.class, true);
+            if (!postStates.contains(transition.get("after"))) {
+                atypeFactory.getChecker().reportError(tree, "typestate.operation.invalid");
             }
         }
         super.processPostconditions(n, store, executableElement, tree);

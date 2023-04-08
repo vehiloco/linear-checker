@@ -7,11 +7,15 @@
     - "initialized"
     - "used"
   operations:
-      IvParameterSpec:
-        package: "java.security.SecureRandom"
+    IvParameterSpec(byte[]):
+        package: "javax.crypto.spec.IvParameterSpec"
+        position: "#1"
+        res: "void"
         before: "initialized"
         after: "used"
-      nextBytes:
+    nextBytes(byte[]):
         package: "java.security.SecureRandom"
+        position: "#1"
+        res: "void"
         before: "empty"
         after: "initialized"
