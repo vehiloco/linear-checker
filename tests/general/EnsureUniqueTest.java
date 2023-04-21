@@ -2,6 +2,7 @@ package general;
 
 import java.security.SecureRandom;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEParameterSpec;
 import org.checkerframework.checker.linear.qual.Unique;
 
 class EnsureUniqueTest {
@@ -30,6 +31,16 @@ class EnsureUniqueTest {
         testBytesIv = newBytesIv;
         // :: error: (argument.type.incompatible)
         IvParameterSpec ivSpec2 = new IvParameterSpec(testBytesIv);
+    }
+
+    // test PBEParameterSpec
+    public void test2(byte @Unique [] bytes) {
+        byte @Unique({}) [] salt = new byte @Unique({}) [16];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(salt);
+        PBEParameterSpec pbeSpec = new PBEParameterSpec(salt, 20);
+        // :: error: (argument.type.incompatible)
+        PBEParameterSpec pbeSpec2 = new PBEParameterSpec(salt, 20);
     }
 
     //    class Demo {
