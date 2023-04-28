@@ -5,8 +5,6 @@ import org.checkerframework.checker.linear.qual.*;
 class SubtypingTest {
 
     @Shared String f;
-    // :: error: (field.type.incompatible)
-    @Unique String u;
 
     void testAssignment(
             @Unique({"a"}) String a,

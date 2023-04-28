@@ -18,9 +18,35 @@ configurations {
 	localDeps
 }
 
-ext.versions = [
-		checkerFramework: "3.32.0-eisop1",
-]
+ext {
+
+	isJava8 = JavaVersion.current() == JavaVersion.VERSION_1_8
+	isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
+
+	versions = [
+			checkerFramework: "3.32.0-eisop1",
+	]
+	compilerArgsForRunningCF = [
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+			"--add-exports",
+			"jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+			"--add-opens",
+			"jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+	]
+}
 
 sourceCompatibility = 1.8
 def checkerframework_local = false  // Set this variable to [true] while using local version of checker framework.
@@ -116,6 +142,13 @@ publishing {
 }
 
 test {
+
+	if (isJava8) {
+		jvmArgs "-Xbootclasspath/p:${cfiPath}/dist/javac.jar"
+	} else {
+		jvmArgs += compilerArgsForRunningCF
+	}
+
 	if (!JavaVersion.current().java9Compatible) {
 		jvmArgs "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"
 	}
