@@ -143,9 +143,7 @@ publishing {
 
 test {
 
-	if (isJava8) {
-		jvmArgs "-Xbootclasspath/p:${cfiPath}/dist/javac.jar"
-	} else {
+	if (!isJava8) {
 		jvmArgs += compilerArgsForRunningCF
 	}
 
