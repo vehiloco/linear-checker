@@ -145,8 +145,10 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             }
         }
         // 2. RHS is Shared
-        if (isRhsShared && isRhsShared) {
-            if (lhsAnnotationMirror != null && rhsAnnotationMirror != null) {
+        if (isLhsShared && isRhsShared) {
+            if (lhsAnnotationMirror != null
+                    && rhsAnnotationMirror != null
+                    && AnnotationUtils.areSameByName(lhsAnnotationMirror, atypeFactory.SHARED)) {
                 store.updateForAssignment(
                         lhs,
                         buildNewValue(
@@ -164,7 +166,8 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 Shared.class,
                                 AnnotationUtils.getElementValueArray(
                                         rhsAnnotationMirror, "value", String.class, true)));
-            } else if (lhsAnnotationMirror != null) {
+            } else if (lhsAnnotationMirror != null
+                    && AnnotationUtils.areSameByName(lhsAnnotationMirror, atypeFactory.SHARED)) {
                 store.updateForAssignment(
                         lhs,
                         buildNewValue(
