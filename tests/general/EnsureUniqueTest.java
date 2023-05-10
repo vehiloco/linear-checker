@@ -1,5 +1,8 @@
 package general;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.SecureRandom;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
@@ -41,6 +44,18 @@ class EnsureUniqueTest {
         PBEParameterSpec pbeSpec = new PBEParameterSpec(salt, 20);
         // :: error: (argument.type.incompatible)
         PBEParameterSpec pbeSpec2 = new PBEParameterSpec(salt, 20);
+    }
+
+    // test KeyStore
+    public void test3(char[] password) throws Exception {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            InputStream in = null; // By convention, 'null' creates an empty key store.
+            // :: error: (argument.type.incompatible)
+            keyStore.load(in, password);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     //    class Demo {

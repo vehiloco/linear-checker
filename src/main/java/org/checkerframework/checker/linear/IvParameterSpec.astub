@@ -37,8 +37,6 @@ public class SecretKeySpec {
     public SecretKeySpec(byte @Unique({"initialized"})[] key, String algorithm);
 }
 
-
-
 package java.security;
 
 class SecureRandom {
@@ -46,4 +44,8 @@ class SecureRandom {
             value = "#1",
             states = {"initialized"})
     void nextBytes(byte @Unique({})[] bytes);
+}
+
+class KeyStore {
+    void load(InputStream stream, char @Unique [] password);
 }
