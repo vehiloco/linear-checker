@@ -1,7 +1,4 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
     dependencies {
         if (JavaVersion.current() >= JavaVersion.VERSION_11) {
             // Code formatting; defines targets "spotlessApply" and "spotlessCheck".
@@ -13,44 +10,48 @@ buildscript {
 }
 
 plugins {
-	id "java"
-	id "maven-publish"
+    id "java"
+    id "maven-publish"
+}
+
+repositories {
+    mavenCentral()
 }
 
 configurations {
-	// for putting Error Prone javac in bootclasspath for running tests
-	errorproneJavac
-	// local dependency
-	localDeps
+    // for putting Error Prone javac in bootclasspath for running tests
+    errorproneJavac
+    // local dependency
+    localDeps
 }
 
 ext {
-	isJava8 = JavaVersion.current() == JavaVersion.VERSION_1_8
-	isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
+    isJava8 = JavaVersion.current() == JavaVersion.VERSION_1_8
+    isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
 
-	versions = [
-			checkerFramework: "3.32.0-eisop1",
-	]
-	compilerArgsForRunningCF = [
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-			"--add-exports",
-			"jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
-			"--add-opens",
-			"jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
-	]
+    versions = [
+        checkerFramework: "3.32.0-eisop1",
+    ]
+    compilerArgsForRunningCF = [
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+        "--add-opens",
+        "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+    ]
 }
 
 sourceCompatibility = 1.8
@@ -58,165 +59,165 @@ def checkerframework_local = false  // Set this variable to [true] while using l
 def CHECKERFRAMEWORK = System.getenv("CHECKERFRAMEWORK")
 
 dependencies {
-	// This dependency is found on compile classpath of this component and consumers.
-	if (checkerframework_local) {
-		if (CHECKERFRAMEWORK == null) {
-			CHECKERFRAMEWORK = "../checker-framework/"
-		}
-		implementation files("${CHECKERFRAMEWORK}/checker/dist/checker-qual.jar")
-		localDeps files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
-	} else {
-		localDeps "io.github.eisop:checker:${versions.checkerFramework}"
-		localDeps "io.github.eisop:checker-qual:${versions.checkerFramework}"
-		localDeps "io.github.eisop:checker-util:${versions.checkerFramework}"
-	}
-	implementation configurations.localDeps
+    // This dependency is found on compile classpath of this component and consumers.
+    if (checkerframework_local) {
+        if (CHECKERFRAMEWORK == null) {
+            CHECKERFRAMEWORK = "../checker-framework/"
+        }
+        implementation files("${CHECKERFRAMEWORK}/checker/dist/checker-qual.jar")
+        localDeps files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
+    } else {
+        localDeps "io.github.eisop:checker:${versions.checkerFramework}"
+        localDeps "io.github.eisop:checker-qual:${versions.checkerFramework}"
+        localDeps "io.github.eisop:checker-util:${versions.checkerFramework}"
+    }
+    implementation configurations.localDeps
 
-	compileOnly "com.google.errorprone:javac:9+181-r4173-1"
+    compileOnly "com.google.errorprone:javac:9+181-r4173-1"
 
-	// Testing
-	testImplementation "junit:junit:4.13"
-	testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
+    // Testing
+    testImplementation "junit:junit:4.13"
+    testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
 
-	errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
-	// https://mvnrepository.com/artifact/org.yaml/snakeyaml
-	implementation 'org.yaml:snakeyaml:1.8'
+    errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+    // https://mvnrepository.com/artifact/org.yaml/snakeyaml
+    implementation 'org.yaml:snakeyaml:1.8'
 }
 
 sourceSets {
-	main {
-		java {
-			srcDirs = ["src/main/java"]
-		}
+    main {
+        java {
+            srcDirs = ["src/main/java"]
+        }
 
-		resources {
-			srcDirs = ["src/main/java"]
-			exclude "**/*.java"
-		}
-	}
+        resources {
+            srcDirs = ["src/main/java"]
+            exclude "**/*.java"
+        }
+    }
 
-	test {
-		java {
-			srcDirs = ["src/test/java"]
-			if (!checkerframework_local) {
-				exclude "tests/PropertyFileTest.java"
-			}
-		}
-	}
+    test {
+        java {
+            srcDirs = ["src/test/java"]
+            if (!checkerframework_local) {
+                exclude "tests/PropertyFileTest.java"
+            }
+        }
+    }
 }
 
 tasks.withType(JavaCompile).all {
-	options.compilerArgs.add("-Xlint:all")
+    options.compilerArgs.add("-Xlint:all")
 }
 
 if (isJava11plus) {
     apply plugin: 'com.diffplug.spotless'
+    assemble.dependsOn(":spotlessApply")
     spotless {
-	java {
-		target "src/**/*.java", "tests/**/*.java"
-		googleJavaFormat().aosp()
-		removeUnusedImports()
-		importOrder('com', 'jdk', 'lib', 'lombok', 'org', 'java', 'javax')
-                formatAnnotations().addTypeAnnotation("Unique").addTypeAnnotation("Shared").addTypeAnnotation("Disappear").addTypeAnnotation("Bottom")
-	}
-	groovyGradle {
-                target '**/*.gradle'
-                greclipse()  // which formatter Spotless should use to format .gradle files.
-                indentWithSpaces(4)
-                trimTrailingWhitespace()
-                // endWithNewline() // Don't want to end empty files with a newline
+        java {
+            target "src/**/*.java", "tests/**/*.java"
+            googleJavaFormat().aosp()
+            removeUnusedImports()
+            importOrder('com', 'jdk', 'lib', 'lombok', 'org', 'java', 'javax')
+            formatAnnotations().addTypeAnnotation("Unique").addTypeAnnotation("Shared").addTypeAnnotation("Disappear").addTypeAnnotation("Bottom")
         }
-	format "misc", {
-		target '**/*.md', "**/.gitignore"
-		trimTrailingWhitespace()
-		indentWithTabs()
-		endWithNewline()
-	}
+        groovyGradle {
+            target '**/*.gradle'
+            greclipse()  // which formatter Spotless should use to format .gradle files.
+            indentWithSpaces(4)
+            trimTrailingWhitespace()
+            // endWithNewline() // Don't want to end empty files with a newline
+        }
+        format "misc", {
+            target '**/*.md', "**/.gitignore"
+            trimTrailingWhitespace()
+            indentWithTabs()
+            endWithNewline()
+        }
     }
 }
 
 // Run `./gradlew publishToMavenLocal` to publish your checker to your local Maven repository.
 publishing {
-	publications {
-		maven(MavenPublication) {
-			groupId = "org.checkerframework"
-			artifactId = "linear-checker"
-			version = "0.1-SNAPSHOT"
-			from components.java
-			if (checkerframework_local) {
-				pom.withXml {
-					def dependenciesNode = asNode().appendNode('dependencies')
-					def dependencyNode = dependenciesNode.appendNode('dependency')
-					dependencyNode.appendNode("groupId", "org.checkerframework")
-					dependencyNode.appendNode("artifactId", "checker")
-					dependencyNode.appendNode("version", "${versions.checkerFramework}")
-					dependencyNode.appendNode("systemPath", projectDir.toString() + "$buildDir/libs/checker.jar")
-				}
-			}
-		}
-	}
+    publications {
+        maven(MavenPublication) {
+            groupId = "org.checkerframework"
+            artifactId = "linear-checker"
+            version = "0.1-SNAPSHOT"
+            from components.java
+            if (checkerframework_local) {
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode("groupId", "org.checkerframework")
+                    dependencyNode.appendNode("artifactId", "checker")
+                    dependencyNode.appendNode("version", "${versions.checkerFramework}")
+                    dependencyNode.appendNode("systemPath", projectDir.toString() + "$buildDir/libs/checker.jar")
+                }
+            }
+        }
+    }
 }
 
 test {
-	if (!isJava8) {
-		jvmArgs += compilerArgsForRunningCF
-	}
+    if (!isJava8) {
+        jvmArgs += compilerArgsForRunningCF
+    }
 
-	if (!JavaVersion.current().java9Compatible) {
-		jvmArgs "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"
-	}
+    if (!JavaVersion.current().java9Compatible) {
+        jvmArgs "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"
+    }
 }
 
 test.dependsOn(":assemble")
-assemble.dependsOn(":spotlessApply")
 
 afterEvaluate {
-	// Configure JUnit tests
-	tasks.withType(Test) {
-		testLogging {
-			// Always run the tests
-			outputs.upToDateWhen { false }
-			// The following prints out each time a test is passed.
-			events "passed", "skipped", "failed", "standardOut", "standardError"
-			// Show the found unexpected diagnostics and expected diagnostics not found.
-			exceptionFormat "full"
-			showExceptions true
-			showCauses true
-			showStackTraces true
-			showStandardStreams true
-		}
-		// After each test, print a summary.
-		afterSuite { desc, result ->
-			if (desc.getClassName() != null) {
-				long mils = result.getEndTime() - result.getStartTime()
-				double seconds = mils / 1000.0
-				println()
-				println "Testsuite: ${desc.getClassName()}\n" +
-						"Tests run: ${result.testCount}, " +
-						"Failures: ${result.failedTestCount}, " +
-						"Skipped: ${result.skippedTestCount}, " +
-						"Time elapsed: ${seconds} sec"
-			}
-		}
-	}
+    // Configure JUnit tests
+    tasks.withType(Test) {
+        testLogging {
+            // Always run the tests
+            outputs.upToDateWhen { false }
+            // The following prints out each time a test is passed.
+            events "passed", "skipped", "failed", "standardOut", "standardError"
+            // Show the found unexpected diagnostics and expected diagnostics not found.
+            exceptionFormat "full"
+            showExceptions true
+            showCauses true
+            showStackTraces true
+            showStandardStreams true
+        }
+        // After each test, print a summary.
+        afterSuite { desc, result ->
+            if (desc.getClassName() != null) {
+                long mils = result.getEndTime() - result.getStartTime()
+                double seconds = mils / 1000.0
+                println()
+                println "Testsuite: ${desc.getClassName()}\n" +
+                        "Tests run: ${result.testCount}, " +
+                        "Failures: ${result.failedTestCount}, " +
+                        "Skipped: ${result.skippedTestCount}, " +
+                        "Time elapsed: ${seconds} sec"
+            }
+        }
+    }
 }
 
 clean.doFirst {
-	delete "${rootDir}/tests/build/",
-			fileTree("tests/") { include "**/*.class" },
-			"${rootDir}/benchmarks/androidKeyStoreProject"
+    delete "${rootDir}/tests/build/",
+            fileTree("tests/") { include "**/*.class" },
+            "${rootDir}/benchmarks/androidKeyStoreProject"
 }
 
 test.doLast {
-	delete "${rootDir}/tests/build/",
-			fileTree("tests/") { include "**/*.class" }
+    delete "${rootDir}/tests/build/",
+            fileTree("tests/") { include "**/*.class" }
 }
 
 task copyDependencies(type: Copy) {
-	from configurations.localDeps
-	into "$buildDir/libs"
+    from configurations.localDeps
+    into "$buildDir/libs"
 }
 
 task printLocalCheckerFrameworkPath() {
-	println CHECKERFRAMEWORK
+    println CHECKERFRAMEWORK
 }

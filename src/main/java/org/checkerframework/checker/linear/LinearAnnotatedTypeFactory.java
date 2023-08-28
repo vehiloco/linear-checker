@@ -1,14 +1,5 @@
 package org.checkerframework.checker.linear;
 
-import java.io.File;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.util.Elements;
 import org.checkerframework.checker.linear.qual.Bottom;
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
@@ -22,6 +13,17 @@ import org.checkerframework.framework.type.QualifierHierarchy;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.util.Elements;
 
 public class LinearAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {

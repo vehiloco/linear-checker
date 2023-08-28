@@ -1,7 +1,8 @@
 package org.checkerframework.checker.linear.qual;
 
-import java.lang.annotation.*;
 import org.checkerframework.framework.qual.SubtypeOf;
+
+import java.lang.annotation.*;
 
 @Documented
 @SubtypeOf({Shared.class})

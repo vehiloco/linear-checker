@@ -1,10 +1,11 @@
 package tests;
 
-import java.io.File;
-import java.util.List;
 import org.checkerframework.checker.linear.LinearChecker;
 import org.checkerframework.framework.test.CheckerFrameworkPerDirectoryTest;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.io.File;
+import java.util.List;
 
 public class GeneralTest extends CheckerFrameworkPerDirectoryTest {
     public GeneralTest(List<File> testFiles) {
