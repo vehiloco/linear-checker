@@ -112,6 +112,7 @@ tasks.withType(JavaCompile).all {
 
 if (isJava11plus) {
     apply plugin: 'com.diffplug.spotless'
+    assemble.dependsOn(":spotlessApply")
     spotless {
         java {
             target "src/**/*.java", "tests/**/*.java"
@@ -169,7 +170,6 @@ test {
 }
 
 test.dependsOn(":assemble")
-assemble.dependsOn(":spotlessApply")
 
 afterEvaluate {
     // Configure JUnit tests
