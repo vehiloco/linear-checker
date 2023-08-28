@@ -1,57 +1,57 @@
 plugins {
-	id 'java'
+    id 'java'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'io.github.eisop:checker:3.25.0-eisop1'
-	implementation 'io.github.eisop:checker-qual:3.25.0-eisop1'
+    implementation 'io.github.eisop:checker:3.25.0-eisop1'
+    implementation 'io.github.eisop:checker-qual:3.25.0-eisop1'
 }
 
 task copySources(type: Copy, dependsOn: ':linear-checker-qual:copySources') {
-	description 'Copy linear-checker-qual source to linear-checker-qual-android'
+    description 'Copy linear-checker-qual source to linear-checker-qual-android'
 
-	includeEmptyDirs = false
-	doFirst {
-		// Delete the directory in case a previously copied file should no longer be in checker-qual
-		delete file('src')
-	}
-	from files('../linear-checker-qual/src/main')
-	include "**/*.java"
-	into file('src/main')
+    includeEmptyDirs = false
+    doFirst {
+        // Delete the directory in case a previously copied file should no longer be in checker-qual
+        delete file('src')
+    }
+    from files('../linear-checker-qual/src/main')
+    include "**/*.java"
+    into file('src/main')
 
-	// Not read only because "replaceAnnotations" tasks writes to the files.
-	fileMode(0666)
-	dirMode(0777)
+    // Not read only because "replaceAnnotations" tasks writes to the files.
+    fileMode(0666)
+    dirMode(0777)
 }
 
 /**
-* Types annotated with runtime annotations are always kept in the main dex by the default Android Gradle plugin.
-* Using the standard Checker Framework annotations can lead to main dex overflows;
-* users of the Checker framework may find themselves unable to build their Android apps.
-* By contrast, class-retention annotations are stripped out before packaging by all build systems as a convention.
-*/
+ * Types annotated with runtime annotations are always kept in the main dex by the default Android Gradle plugin.
+ * Using the standard Checker Framework annotations can lead to main dex overflows;
+ * users of the Checker framework may find themselves unable to build their Android apps.
+ * By contrast, class-retention annotations are stripped out before packaging by all build systems as a convention.
+ */
 task replaceAnnotations {
-	doLast {
-		fileTree(dir: 'src', include: "**/*.java").each {
-			it.text = it.text.replaceAll("RetentionPolicy.RUNTIME", "RetentionPolicy.CLASS")
-		}
-	}
+    doLast {
+        fileTree(dir: 'src', include: "**/*.java").each {
+            it.text = it.text.replaceAll("RetentionPolicy.RUNTIME", "RetentionPolicy.CLASS")
+        }
+    }
 }
 replaceAnnotations.dependsOn copySources
 
 jar {
-	dependsOn replaceAnnotations
-	manifest {
-		attributes('Export-Package': '*')
-	}
+    dependsOn replaceAnnotations
+    manifest {
+        attributes('Export-Package': '*')
+    }
 }
 
 compileJava.dependsOn replaceAnnotations
 
 clean {
-	delete file('src')
+    delete file('src')
 }

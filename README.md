@@ -16,6 +16,4 @@ Under the project source directory, execute `./gradlew build`. The output jar fi
 
 - To run type checking on the source file, use the following command:
 
-    `javac -processor org.checkerframework.checker.linear.LinearChecker -Astubs=<Project Dir>/src/main/java/org/checkerframework/checker/linear/ -classpath <Project dir>/build/libs/linear-checker.jar:$CLASSPATH` <your source files>
-
-
+	`javac -processor org.checkerframework.checker.linear.LinearChecker -Astubs=<Project Dir>/src/main/java/org/checkerframework/checker/linear/ -classpath <Project dir>/build/libs/linear-checker.jar:$CLASSPATH` <your source files>

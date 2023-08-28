@@ -3,13 +3,7 @@ package org.checkerframework.checker.linear;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.code.Symbol;
-import java.lang.annotation.Annotation;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
+
 import org.checkerframework.checker.linear.qual.*;
 import org.checkerframework.dataflow.analysis.RegularTransferResult;
 import org.checkerframework.dataflow.analysis.TransferInput;
@@ -21,6 +15,15 @@ import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ExecutableElement;
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 

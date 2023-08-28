@@ -1,12 +1,14 @@
 package general;
 
+import org.checkerframework.checker.linear.qual.Unique;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEParameterSpec;
-import org.checkerframework.checker.linear.qual.Unique;
 
 class EnsureUniqueTest {
     // For example, suppose state0 is a initial state and will be changed

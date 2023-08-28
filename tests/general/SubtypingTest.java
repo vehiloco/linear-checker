@@ -12,8 +12,7 @@ class SubtypingTest {
             @Shared({"c"}) String c,
             @Shared({"d"}) String d) {
         // T-assign-shared, shared should be @Shared({"c"}) after being assignment;
-        @Shared({})
-        String shared;
+        @Shared({}) String shared;
         shared = c;
         // T-assign-shared, should shared be @Shared({"c", "d"})?
         shared = d;
@@ -57,8 +56,7 @@ class SubtypingTest {
         r2 = this.invocation("string");
     }
 
-    @Shared
-    String invocation(String a) {
+    @Shared String invocation(String a) {
         return a;
     }
 }

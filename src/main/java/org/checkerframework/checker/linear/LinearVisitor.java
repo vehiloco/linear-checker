@@ -1,10 +1,7 @@
 package org.checkerframework.checker.linear;
 
 import com.sun.source.tree.*;
-import java.util.List;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.type.TypeKind;
+
 import org.checkerframework.checker.linear.qual.Disappear;
 import org.checkerframework.checker.linear.qual.Shared;
 import org.checkerframework.checker.linear.qual.Unique;
@@ -13,6 +10,12 @@ import org.checkerframework.common.basetype.BaseTypeVisitor;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
+
+import java.util.List;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.type.TypeKind;
 
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
