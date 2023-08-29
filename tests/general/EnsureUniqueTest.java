@@ -2,13 +2,9 @@ package general;
 
 import org.checkerframework.checker.linear.qual.Unique;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.security.SecureRandom;
 
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEParameterSpec;
 
 class EnsureUniqueTest {
     // For example, suppose state0 is a initial state and will be changed
@@ -37,45 +33,4 @@ class EnsureUniqueTest {
         // :: error: (argument.type.incompatible)
         IvParameterSpec ivSpec2 = new IvParameterSpec(testBytesIv);
     }
-
-    // test PBEParameterSpec
-    public void test2(byte @Unique [] bytes) {
-        byte @Unique({}) [] salt = new byte @Unique({}) [16];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(salt);
-        PBEParameterSpec pbeSpec = new PBEParameterSpec(salt, 20);
-        // :: error: (argument.type.incompatible)
-        PBEParameterSpec pbeSpec2 = new PBEParameterSpec(salt, 20);
-    }
-
-    // test KeyStore
-    public void test3(char[] password) throws Exception {
-        try {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            InputStream in = null; // By convention, 'null' creates an empty key store.
-            // :: error: (argument.type.incompatible)
-            keyStore.load(in, password);
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    //    class Demo {
-    //        Object o;
-    //    }
-    //
-    //    class Global {
-    //        static Object f;
-    //    }
-    //    class Leak {
-    //        Leak(@MaybeShared Demo p) {
-    //            p.o = this;
-    //            Global.f = this;
-    //        }
-    //    }
-    //
-    //    void foo(@MaybeShared Demo d) {
-    //        @Unique Leak l = new Leak(d);
-    //        // two references! l and d.o
-    //    }
 }

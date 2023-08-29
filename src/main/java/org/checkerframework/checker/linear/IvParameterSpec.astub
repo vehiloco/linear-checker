@@ -10,21 +10,6 @@ public class IvParameterSpec {
     public IvParameterSpec(byte @Unique({"initialized"})[] iv);
 }
 
-public class PBEKeySpec {
-    @EnsureUnique(
-            value = "#2",
-            states = {"used"})
-    public PBEKeySpec(char[] password, byte @Unique({"initialized"})[] salt, int iterationCount);
-    public PBEKeySpec(char[] password, byte @Unique({"initialized"})[] salt, int iterationCount, int keyLength);
-}
-
-public class PBEParameterSpec {
-    @EnsureUnique(
-            value = "#1",
-            states = {"used"})
-    public PBEParameterSpec(byte @Unique({"initialized"})[] salt, int iterationCount);
-}
-
 package java.security;
 
 class SecureRandom {
@@ -32,8 +17,4 @@ class SecureRandom {
             value = "#1",
             states = {"initialized"})
     void nextBytes(byte @Unique({})[] bytes);
-}
-
-class KeyStore {
-    void load(InputStream stream, char @Unique [] password);
 }
