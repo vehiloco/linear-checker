@@ -73,13 +73,13 @@ dependencies {
     }
     implementation configurations.localDeps
 
-    compileOnly "com.google.errorprone:javac:9+181-r4173-1"
+    compileOnly "com.google.errorprone:javac:1+"
 
     // Testing
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
 
-    errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+    errorproneJavac "com.google.errorprone:javac:1+"
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     implementation 'org.yaml:snakeyaml:2.2'
 }
