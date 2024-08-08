@@ -13,7 +13,7 @@ plugins {
     id "java"
     id "maven-publish"
     // https://github.com/tbroyer/gradle-errorprone-plugin
-    id 'net.ltgt.errorprone' version '3.1.0'
+    // id 'net.ltgt.errorprone' version '3.1.0'
 }
 
 repositories {
@@ -34,7 +34,9 @@ ext {
     isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
 
     versions = [
-        checkerFramework: "3.32.0-eisop1",
+        checkerFramework: '3.32.0-eisop1',
+        errorproneCore  : '2.29.2',
+        errorproneJavac : '9+181-r4173-1'
     ]
     compilerArgsForRunningCF = [
         "--add-exports",
@@ -90,10 +92,10 @@ dependencies {
     }
 
     if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-        javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavacVersion}"
+        javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavac}"
     }
-    errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCoreVersion}"
-    errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavacVersion}"
+    // errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCore}"
+    errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavac}"
 
     // Testing
     testImplementation "junit:junit:4.13.2"
