@@ -4,7 +4,7 @@ buildscript {
             // Code formatting; defines targets "spotlessApply" and "spotlessCheck".
             // https://github.com/diffplug/spotless/tags ; see tags starting "gradle/"
             // Only works on JDK 11+.
-            classpath 'com.diffplug.spotless:spotless-plugin-gradle:6.22.0'
+            classpath 'com.diffplug.spotless:spotless-plugin-gradle:6.23.0'
         }
     }
 }
@@ -12,13 +12,17 @@ buildscript {
 plugins {
     id "java"
     id "maven-publish"
+    // https://github.com/tbroyer/gradle-errorprone-plugin
+    id 'net.ltgt.errorprone' version '3.1.0'
 }
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 configurations {
+    javacJar
     // for putting Error Prone javac in bootclasspath for running tests
     errorproneJavac
     // local dependency
@@ -54,32 +58,47 @@ ext {
     ]
 }
 
-sourceCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
+
 def checkerframework_local = false  // Set this variable to [true] while using local version of checker framework.
 def CHECKERFRAMEWORK = System.getenv("CHECKERFRAMEWORK")
 
+ext {
+    isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
+}
+
+
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
+    // TODO: clean up implementation/localDeps duplication.
     if (checkerframework_local) {
         if (CHECKERFRAMEWORK == null) {
             CHECKERFRAMEWORK = "../checker-framework/"
         }
         implementation files("${CHECKERFRAMEWORK}/checker/dist/checker-qual.jar")
+        implementation files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
         localDeps files("${CHECKERFRAMEWORK}/checker/dist/checker.jar")
     } else {
+        implementation "io.github.eisop:checker:${versions.checkerFramework}"
         localDeps "io.github.eisop:checker:${versions.checkerFramework}"
+        implementation "io.github.eisop:checker-qual:${versions.checkerFramework}"
         localDeps "io.github.eisop:checker-qual:${versions.checkerFramework}"
+        implementation "io.github.eisop:checker-util:${versions.checkerFramework}"
         localDeps "io.github.eisop:checker-util:${versions.checkerFramework}"
     }
-    implementation configurations.localDeps
 
-    compileOnly "com.google.errorprone:javac:9+181-r4173-1"
+    if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+        javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavacVersion}"
+    }
+    errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCoreVersion}"
+    errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavacVersion}"
 
     // Testing
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
 
-    errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     implementation 'org.yaml:snakeyaml:2.2'
 }
@@ -106,10 +125,6 @@ sourceSets {
     }
 }
 
-tasks.withType(JavaCompile).all {
-    options.compilerArgs.add("-Xlint:all")
-}
-
 if (isJava11plus) {
     apply plugin: 'com.diffplug.spotless'
     assemble.dependsOn(":spotlessApply")
@@ -121,6 +136,12 @@ if (isJava11plus) {
             importOrder('com', 'jdk', 'lib', 'lombok', 'org', 'java', 'javax')
             formatAnnotations().addTypeAnnotation("Unique").addTypeAnnotation("Shared").addTypeAnnotation("Disappear").addTypeAnnotation("Bottom")
         }
+        format "misc", {
+            target '**/*.md', "**/.gitignore"
+            trimTrailingWhitespace()
+            indentWithTabs()
+            endWithNewline()
+        }
         groovyGradle {
             target '**/*.gradle'
             greclipse()  // which formatter Spotless should use to format .gradle files.
@@ -128,20 +149,15 @@ if (isJava11plus) {
             trimTrailingWhitespace()
             // endWithNewline() // Don't want to end empty files with a newline
         }
-        format "misc", {
-            target '**/*.md', "**/.gitignore"
-            trimTrailingWhitespace()
-            indentWithTabs()
-            endWithNewline()
-        }
     }
 }
+
 
 // Run `./gradlew publishToMavenLocal` to publish your checker to your local Maven repository.
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = "org.checkerframework"
+            groupId = "io.github.eisop"
             artifactId = "linear-checker"
             version = "0.1-SNAPSHOT"
             from components.java
@@ -149,7 +165,7 @@ publishing {
                 pom.withXml {
                     def dependenciesNode = asNode().appendNode('dependencies')
                     def dependencyNode = dependenciesNode.appendNode('dependency')
-                    dependencyNode.appendNode("groupId", "org.checkerframework")
+                    dependencyNode.appendNode("groupId", "io.github.eisop")
                     dependencyNode.appendNode("artifactId", "checker")
                     dependencyNode.appendNode("version", "${versions.checkerFramework}")
                     dependencyNode.appendNode("systemPath", projectDir.toString() + "$buildDir/libs/checker.jar")
