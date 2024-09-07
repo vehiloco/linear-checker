@@ -93,6 +93,7 @@ dependencies {
 
     if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
         javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavac}"
+        implementation files("${System.getenv('JAVA_HOME')}/lib/tools.jar")
     }
     // errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCore}"
     errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavac}"
