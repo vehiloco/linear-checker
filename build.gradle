@@ -128,6 +128,10 @@ sourceSets {
     }
 }
 
+tasks.withType(JavaCompile).all {
+    options.compilerArgs.add("-Xlint:all")
+}
+
 if (isJava11plus) {
     apply plugin: 'com.diffplug.spotless'
     assemble.dependsOn(":spotlessApply")
