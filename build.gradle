@@ -35,7 +35,7 @@ ext {
 
     versions = [
         checkerFramework: '3.32.0-eisop1',
-        errorproneCore  : '2.29.2',
+        errorproneCore  : '2.32.0',
         errorproneJavac : '9+181-r4173-1'
     ]
     compilerArgsForRunningCF = [
