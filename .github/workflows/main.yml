@@ -12,7 +12,7 @@ jobs:
   build:
     strategy:
       matrix:
-        jdk: [ 8, 11, 17 ]
+        jdk: [ 8, 11, 17, 21 ]
     runs-on: ubuntu-latest
     steps:
       - name: Pull Request Checkout
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
         if: github.head_ref == ''
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: ${{matrix.jdk}}
           distribution: 'temurin'
