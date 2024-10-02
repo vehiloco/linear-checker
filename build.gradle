@@ -13,7 +13,7 @@ plugins {
     id "java"
     id "maven-publish"
     // https://github.com/tbroyer/gradle-errorprone-plugin
-     id 'net.ltgt.errorprone' version '3.1.0'
+    id 'net.ltgt.errorprone' version '3.1.0'
 }
 
 repositories {
@@ -95,7 +95,7 @@ dependencies {
         javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavac}"
         implementation files("${System.getenv('JAVA_HOME')}/lib/tools.jar")
     }
-    // errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCore}"
+    errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCore}"
     errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavac}"
 
     // Testing
