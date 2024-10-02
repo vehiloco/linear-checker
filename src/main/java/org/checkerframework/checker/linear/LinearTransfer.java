@@ -94,7 +94,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 isRhsUnique = true;
                 break;
             } else if (AnnotationUtils.areSameByName(atypeFactory.DISAPPEAR, rhsAnnoMirror)) {
-                return new RegularTransferResult(null, store);
+                return new RegularTransferResult<>(null, store);
             }
         }
         // Determine the lhs value type. As we don't update rhs annotations(i.e., from unique to
@@ -179,7 +179,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 AnnotationUtils.getElementValueArray(
                                         lhsAnnotationMirror, "value", String.class, true)));
             }
-            return new RegularTransferResult(null, store);
+            return new RegularTransferResult<>(null, store);
         }
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
 
@@ -234,9 +234,8 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             return;
         }
 
-        Map<String, Map<String, Map<String, String>>> operations =
-                (Map<String, Map<String, Map<String, String>>>)
-                        atypeFactory.atomoton.get("operations");
+        Map<String, Map<String, String>> operations =
+                (Map<String, Map<String, String>>) atypeFactory.atomoton.get("operations");
         // Check operations
         if (!operations.containsKey(
                 ((Symbol.MethodSymbol) executableElement).baseSymbol().toString())) {
@@ -244,7 +243,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             return;
         }
 
-        Map<String, Map<String, String>> transition =
+        Map<String, String> transition =
                 operations.get(((Symbol.MethodSymbol) executableElement).baseSymbol().toString());
         // Whether the postconditions hold
         ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
