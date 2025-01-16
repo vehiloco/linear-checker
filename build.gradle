@@ -1,10 +1,7 @@
 buildscript {
     dependencies {
         if (JavaVersion.current() >= JavaVersion.VERSION_11) {
-            // Code formatting; defines targets "spotlessApply" and "spotlessCheck".
-            // https://github.com/diffplug/spotless/tags ; see tags starting "gradle/"
-            // Only works on JDK 11+.
-            classpath 'com.diffplug.spotless:spotless-plugin-gradle:6.23.0'
+            classpath 'com.diffplug.spotless:spotless-plugin-gradle:7.0.2'
         }
     }
 }
@@ -13,7 +10,7 @@ plugins {
     id "java"
     id "maven-publish"
     // https://github.com/tbroyer/gradle-errorprone-plugin
-    // id 'net.ltgt.errorprone' version '3.1.0'
+    id 'net.ltgt.errorprone' version '4.1.0'
 }
 
 repositories {
@@ -22,7 +19,6 @@ repositories {
 }
 
 configurations {
-    javacJar
     // for putting Error Prone javac in bootclasspath for running tests
     errorproneJavac
     // local dependency
@@ -30,33 +26,32 @@ configurations {
 }
 
 ext {
-    isJava8 = JavaVersion.current() == JavaVersion.VERSION_1_8
-    isJava11plus = JavaVersion.current() >= JavaVersion.VERSION_11
-
     versions = [
-        checkerFramework: '3.32.0-eisop1',
-        errorproneCore  : '2.29.2',
-        errorproneJavac : '9+181-r4173-1'
+        checkerFramework: "3.42.0-eisop5",
+        errorproneJavacVersion: "9+181-r4173-1",
+        errorproneCoreVersion: "2.36.0",
     ]
+
+    // Keep in sync with the same variable in checker-framework/build.gradle
     compilerArgsForRunningCF = [
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-        "--add-exports",
-        "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
-        "--add-opens",
-        "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+        '--add-exports',
+        'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        '--add-opens',
+        'jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
     ]
 }
 
@@ -91,11 +86,8 @@ dependencies {
         localDeps "io.github.eisop:checker-util:${versions.checkerFramework}"
     }
 
-    if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
-        javacJar group: 'com.google.errorprone', name: 'javac', version: "${versions.errorproneJavac}"
-    }
-    // errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCore}"
-    errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavac}"
+    errorprone "com.google.errorprone:error_prone_core:${versions.errorproneCoreVersion}"
+    errorproneJavac "com.google.errorprone:javac:${versions.errorproneJavacVersion}"
 
     // Testing
     testImplementation "junit:junit:4.13.2"
@@ -141,13 +133,13 @@ if (isJava11plus) {
         format "misc", {
             target '**/*.md', "**/.gitignore"
             trimTrailingWhitespace()
-            indentWithTabs()
+            leadingSpacesToTabs()
             endWithNewline()
         }
         groovyGradle {
             target '**/*.gradle'
             greclipse()  // which formatter Spotless should use to format .gradle files.
-            indentWithSpaces(4)
+            leadingTabsToSpaces(4)
             trimTrailingWhitespace()
             // endWithNewline() // Don't want to end empty files with a newline
         }
@@ -177,32 +169,28 @@ publishing {
     }
 }
 
-test {
-    if (!isJava8) {
-        jvmArgs += compilerArgsForRunningCF
-    }
-
-    if (!JavaVersion.current().java9Compatible) {
-        jvmArgs "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"
-    }
-}
-
 test.dependsOn(":assemble")
 
 afterEvaluate {
     // Configure JUnit tests
     tasks.withType(Test) {
+        if (!JavaVersion.current().java9Compatible) {
+            jvmArgs "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}"
+        } else {
+            jvmArgs += compilerArgsForRunningCF
+        }
+
         testLogging {
             // Always run the tests
             outputs.upToDateWhen { false }
             // The following prints out each time a test is passed.
             events "passed", "skipped", "failed", "standardOut", "standardError"
             // Show the found unexpected diagnostics and expected diagnostics not found.
-            exceptionFormat "full"
-            showExceptions true
-            showCauses true
-            showStackTraces true
-            showStandardStreams true
+            exceptionFormat = "full"
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
+            showStandardStreams = true
         }
         // After each test, print a summary.
         afterSuite { desc, result ->
@@ -216,6 +204,43 @@ afterEvaluate {
                         "Skipped: ${result.skippedTestCount}, " +
                         "Time elapsed: ${seconds} sec"
             }
+        }
+    }
+
+    // Code adapted from checker-framework:
+    // https://github.com/eisop/checker-framework/blob/567084f11278273b33289d138d9d2a1b513d3c35/build.gradle#L226
+    tasks.withType(JavaCompile) { compilationTask ->
+        sourceCompatibility = 8
+        targetCompatibility = 8
+        options.failOnError = true
+        options.deprecation = true
+        options.compilerArgs += [
+            '-g',
+            '-Werror',
+            // -options because source 8 is obsolete on newer JDKs
+            "-Xlint:all,-options",
+        ]
+        options.encoding = 'UTF-8'
+        options.fork = true
+        if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+            options.forkOptions.jvmArgs += [
+                "-Xbootclasspath/p:${configurations.errorproneJavac.asPath}".toString()
+            ]
+            options.errorprone.enabled = false
+        } else {
+            options.errorprone.enabled = (JavaVersion.current() >= JavaVersion.VERSION_17)
+            options.forkOptions.jvmArgs += [
+                '--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+                '--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+                '--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+                '--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+            ]
         }
     }
 }
