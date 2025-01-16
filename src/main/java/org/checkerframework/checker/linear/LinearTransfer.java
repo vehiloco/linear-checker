@@ -1,8 +1,6 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
-import com.sun.tools.javac.code.Symbol;
 
 import org.checkerframework.checker.linear.qual.*;
 import org.checkerframework.dataflow.analysis.RegularTransferResult;
@@ -10,8 +8,6 @@ import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.*;
 import org.checkerframework.framework.flow.*;
-import org.checkerframework.framework.util.Contract;
-import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
@@ -20,12 +16,10 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
 
 // TODO:
 // AnnotationUtils.getElementValueArray(..., Element, String.class, Collections.emptyList())
@@ -249,6 +243,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 newLhsSet, atypeFactory.getAnnotatedType(tree).getUnderlyingType());
     }
 
+    /*
     @Override
     protected void processPostconditions(
             Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
@@ -280,10 +275,14 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             List<String> postStates =
                     AnnotationUtils.getElementValueArray(
                             annotationMirror, atypeFactory.ensureUniqueValueElement, String.class);
+     // TODO: there currently is no example for this error.
+     // The check does not pass Error Prone - there is a mismatch between what postStates contains
+     // and what transition.get returns.
             if (!postStates.contains(transition.get("after"))) {
                 atypeFactory.getChecker().reportError(tree, "typestate.operation.invalid");
             }
         }
         super.processPostconditions(n, store, executableElement, tree);
     }
+    */
 }

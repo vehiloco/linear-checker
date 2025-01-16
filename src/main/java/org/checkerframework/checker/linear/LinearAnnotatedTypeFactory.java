@@ -191,10 +191,10 @@ public class LinearAnnotatedTypeFactory
                 }
             }
             // TODO: also think about this
-            if (AnnotationUtils.areSameByName(a1, UNIQUE)
-                            && AnnotationUtils.areSameByName(a2, DISAPPEAR)
-                    || AnnotationUtils.areSameByName(a1, DISAPPEAR)
-                            && AnnotationUtils.areSameByName(a2, UNIQUE)) {
+            if ((AnnotationUtils.areSameByName(a1, UNIQUE)
+                            && AnnotationUtils.areSameByName(a2, DISAPPEAR))
+                    || (AnnotationUtils.areSameByName(a1, DISAPPEAR)
+                            && AnnotationUtils.areSameByName(a2, UNIQUE))) {
                 return DISAPPEAR;
             }
             return BOTTOM;

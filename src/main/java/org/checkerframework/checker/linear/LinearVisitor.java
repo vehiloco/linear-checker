@@ -17,7 +17,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("VoidUsed")
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     final boolean STRONG_BOX_BACKED_ENABLE = checker.getLintOption("strongboxbacked", false);
@@ -122,10 +122,10 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
                 && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR)) {
             checker.reportError(lhs, "disappear.assignment.not.allowed");
         }
-        if (rhsAnnotationMirror != null
-                        && AnnotationUtils.areSameByName(rhsAnnotationMirror, DISAPPEAR)
-                || lhsAnnotationMirror != null
-                        && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR)) {
+        if ((rhsAnnotationMirror != null
+                        && AnnotationUtils.areSameByName(rhsAnnotationMirror, DISAPPEAR))
+                || (lhsAnnotationMirror != null
+                        && AnnotationUtils.areSameByName(lhsAnnotationMirror, DISAPPEAR))) {
             checker.reportError(rhs, "disappear.assignment.not.allowed");
         }
         return super.visitAssignment(node, p);
@@ -141,6 +141,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         if (atypeFactory.automaton != null && annotationMirror != null) {
             @SuppressWarnings("unchecked")
             List<String> states = (List<String>) atypeFactory.automaton.get("states");
+            @SuppressWarnings("deprecation")
             List<String> presentStates =
                     AnnotationUtils.getElementValueArray(
                             annotationMirror, "value", String.class, true);
