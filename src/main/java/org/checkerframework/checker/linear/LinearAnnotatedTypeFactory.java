@@ -47,11 +47,11 @@ public class LinearAnnotatedTypeFactory
 
     protected final Map<String, Object> automaton = parseAutomaton();
 
-    final ExecutableElement sharedValueElement =
+    protected final ExecutableElement sharedValueElement =
             TreeUtils.getMethod(Shared.class, "value", 0, processingEnv);
-    final ExecutableElement uniqueValueElement =
+    protected final ExecutableElement uniqueValueElement =
             TreeUtils.getMethod(Unique.class, "value", 0, processingEnv);
-    final ExecutableElement ensureUniqueValueElement =
+    protected final ExecutableElement ensureUniqueValueElement =
             TreeUtils.getMethod(EnsureUnique.class, "value", 0, processingEnv);
 
     @SuppressWarnings("this-escape")
