@@ -17,6 +17,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 
+@SuppressWarnings("deprecation")
 public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     final boolean STRONG_BOX_BACKED_ENABLE = checker.getLintOption("strongboxbacked", false);
@@ -26,8 +27,10 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
     /** The @{@link Disappear} annotation. */
     protected final AnnotationMirror DISAPPEAR =
             AnnotationBuilder.fromClass(elements, Disappear.class);
+
     /** The @{@link Unique} annotation. */
     protected final AnnotationMirror UNIQUUE = AnnotationBuilder.fromClass(elements, Unique.class);
+
     /** The @{@link Shared} annotation. */
     protected final AnnotationMirror MAYALIASED =
             AnnotationBuilder.fromClass(elements, Shared.class);
@@ -135,8 +138,9 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
                 type.getAnnotation(Unique.class) != null
                         ? type.getAnnotation(Unique.class)
                         : type.getAnnotation(Shared.class);
-        if (atypeFactory.atomoton != null && annotationMirror != null) {
-            List<String> states = (List<String>) atypeFactory.atomoton.get("states");
+        if (atypeFactory.automaton != null && annotationMirror != null) {
+            @SuppressWarnings("unchecked")
+            List<String> states = (List<String>) atypeFactory.automaton.get("states");
             List<String> presentStates =
                     AnnotationUtils.getElementValueArray(
                             annotationMirror, "value", String.class, true);

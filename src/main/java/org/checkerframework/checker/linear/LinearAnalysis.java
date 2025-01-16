@@ -109,7 +109,7 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                 if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, lhsAnno)) {
                     List<String> lhsStatesList =
                             AnnotationUtils.getElementValueArray(
-                                    lhsAnno, "value", String.class, true);
+                                    lhsAnno, atypeFactory.uniqueValueElement, String.class);
                     // TODO: hard to check
                     if (lhsStatesList.size() > 0) {
                         return true;
