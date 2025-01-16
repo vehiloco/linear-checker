@@ -29,7 +29,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 
-@SuppressWarnings("deprecation")
 public class LinearAnnotatedTypeFactory
         extends GenericAnnotatedTypeFactory<CFValue, CFStore, LinearTransfer, LinearAnalysis> {
 
