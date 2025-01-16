@@ -1,10 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory:
+    directories:
       - "/"
-      - "linear-checker-qual-android/"
-      - "linear-checker-qual"
+      - "/linear-checker-qual-android/"
+      - "/linear-checker-qual/"
     schedule:
       interval: "daily"
 
