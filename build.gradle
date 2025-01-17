@@ -94,7 +94,7 @@ dependencies {
     testImplementation "io.github.eisop:framework-test:${versions.checkerFramework}"
 
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
-    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.yaml:snakeyaml:2.3'
 }
 
 sourceSets {
