@@ -6,13 +6,17 @@ repositories {
     mavenCentral()
 }
 
+ext.versions = [
+    checkerFramework: "3.42.0-eisop5",
+]
+
 dependencies {
-    implementation 'io.github.eisop:checker:3.25.0-eisop1'
-    implementation 'io.github.eisop:checker-qual:3.25.0-eisop1'
+    implementation "io.github.eisop:checker:${versions.checkerFramework}"
+    implementation "io.github.eisop:checker-qual:${versions.checkerFramework}"
 }
 
 task copySources(type: Copy, dependsOn: ':linear-checker-qual:copySources') {
-    description 'Copy linear-checker-qual source to linear-checker-qual-android'
+    description = 'Copy linear-checker-qual source to linear-checker-qual-android'
 
     includeEmptyDirs = false
     doFirst {
@@ -24,8 +28,19 @@ task copySources(type: Copy, dependsOn: ':linear-checker-qual:copySources') {
     into file('src/main')
 
     // Not read only because "replaceAnnotations" tasks writes to the files.
-    fileMode(0666)
-    dirMode(0777)
+    filePermissions {
+        user {
+            read = true
+            write = true
+        }
+    }
+    dirPermissions {
+        user {
+            read = true
+            write = true
+            execute = true
+        }
+    }
 }
 
 /**

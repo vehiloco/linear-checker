@@ -1,6 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
+    directories:
+      - "/"
+      - "/linear-checker-qual-android/"
+      - "/linear-checker-qual/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"

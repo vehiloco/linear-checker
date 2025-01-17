@@ -1,8 +1,6 @@
 package org.checkerframework.checker.linear;
 
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.Tree;
-import com.sun.tools.javac.code.Symbol;
 
 import org.checkerframework.checker.linear.qual.*;
 import org.checkerframework.dataflow.analysis.RegularTransferResult;
@@ -10,20 +8,23 @@ import org.checkerframework.dataflow.analysis.TransferInput;
 import org.checkerframework.dataflow.analysis.TransferResult;
 import org.checkerframework.dataflow.cfg.node.*;
 import org.checkerframework.framework.flow.*;
-import org.checkerframework.framework.util.Contract;
-import org.checkerframework.framework.util.ContractsFromMethod;
 import org.checkerframework.javacutil.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationMirrorSet;
 import org.checkerframework.javacutil.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.ExecutableElement;
+
+// TODO:
+// AnnotationUtils.getElementValueArray(..., Element, String.class, Collections.emptyList())
+// should not need the default argument. It should optionally use the default from the
+// annotation declaration, like for the version that takes a name.
 
 public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearTransfer> {
 
@@ -94,7 +95,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 isRhsUnique = true;
                 break;
             } else if (AnnotationUtils.areSameByName(atypeFactory.DISAPPEAR, rhsAnnoMirror)) {
-                return new RegularTransferResult(null, store);
+                return new RegularTransferResult<>(null, store);
             }
         }
         // Determine the lhs value type. As we don't update rhs annotations(i.e., from unique to
@@ -112,7 +113,7 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
         // 1. RHS is Unique
         if (isRhsUnique) {
             // Set RHS node value to disappear if it is Unique before assignment
-            store.updateForAssignment(rhs, buildNewValue(rhs.getTree(), Disappear.class));
+            store.updateForAssignment(rhs, buildNewValue(rhs.getTree(), Disappear.class, null));
             // Transfer states from rhs to lhs directly if lhs is also unique.
             if (isLhsUnique) {
                 store.updateForAssignment(
@@ -121,20 +122,29 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 lhs.getTree(),
                                 Unique.class,
                                 AnnotationUtils.getElementValueArray(
-                                        rhsAnnotationMirror, "value", String.class, true)));
+                                        rhsAnnotationMirror,
+                                        atypeFactory.uniqueValueElement,
+                                        String.class,
+                                        Collections.emptyList())));
             }
             if (isLhsShared) {
                 if (lhsAnnotationMirror != null) {
                     // Merge
+                    List<String> merged = new ArrayList<>();
+                    merged.addAll(
+                            AnnotationUtils.getElementValueArray(
+                                    lhsAnnotationMirror,
+                                    atypeFactory.sharedValueElement,
+                                    String.class,
+                                    Collections.emptyList()));
+                    merged.addAll(
+                            AnnotationUtils.getElementValueArray(
+                                    rhsAnnotationMirror,
+                                    atypeFactory.uniqueValueElement,
+                                    String.class,
+                                    Collections.emptyList()));
                     store.updateForAssignment(
-                            lhs,
-                            buildNewValue(
-                                    lhs.getTree(),
-                                    Shared.class,
-                                    AnnotationUtils.getElementValueArray(
-                                            lhsAnnotationMirror, "value", String.class, true),
-                                    AnnotationUtils.getElementValueArray(
-                                            rhsAnnotationMirror, "value", String.class, true)));
+                            lhs, buildNewValue(lhs.getTree(), Shared.class, merged));
                 } else {
                     // Just transfer
                     store.updateForAssignment(
@@ -143,7 +153,10 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                     lhs.getTree(),
                                     Shared.class,
                                     AnnotationUtils.getElementValueArray(
-                                            rhsAnnotationMirror, "value", String.class, true)));
+                                            rhsAnnotationMirror,
+                                            atypeFactory.uniqueValueElement,
+                                            String.class,
+                                            Collections.emptyList())));
                 }
             }
         }
@@ -152,15 +165,20 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
             if (lhsAnnotationMirror != null
                     && rhsAnnotationMirror != null
                     && AnnotationUtils.areSameByName(lhsAnnotationMirror, atypeFactory.SHARED)) {
-                store.updateForAssignment(
-                        lhs,
-                        buildNewValue(
-                                lhs.getTree(),
-                                Shared.class,
-                                AnnotationUtils.getElementValueArray(
-                                        lhsAnnotationMirror, "value", String.class, true),
-                                AnnotationUtils.getElementValueArray(
-                                        rhsAnnotationMirror, "value", String.class, true)));
+                List<String> merged = new ArrayList<>();
+                merged.addAll(
+                        AnnotationUtils.getElementValueArray(
+                                lhsAnnotationMirror,
+                                atypeFactory.sharedValueElement,
+                                String.class,
+                                Collections.emptyList()));
+                merged.addAll(
+                        AnnotationUtils.getElementValueArray(
+                                rhsAnnotationMirror,
+                                atypeFactory.sharedValueElement,
+                                String.class,
+                                Collections.emptyList()));
+                store.updateForAssignment(lhs, buildNewValue(lhs.getTree(), Shared.class, merged));
             } else if (lhsAnnotationMirror == null && rhsAnnotationMirror != null) {
                 store.updateForAssignment(
                         lhs,
@@ -168,7 +186,9 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 lhs.getTree(),
                                 Shared.class,
                                 AnnotationUtils.getElementValueArray(
-                                        rhsAnnotationMirror, "value", String.class, true)));
+                                        rhsAnnotationMirror,
+                                        atypeFactory.sharedValueElement,
+                                        String.class)));
             } else if (lhsAnnotationMirror != null
                     && AnnotationUtils.areSameByName(lhsAnnotationMirror, atypeFactory.SHARED)) {
                 store.updateForAssignment(
@@ -177,9 +197,11 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                                 lhs.getTree(),
                                 Shared.class,
                                 AnnotationUtils.getElementValueArray(
-                                        lhsAnnotationMirror, "value", String.class, true)));
+                                        lhsAnnotationMirror,
+                                        atypeFactory.sharedValueElement,
+                                        String.class)));
             }
-            return new RegularTransferResult(null, store);
+            return new RegularTransferResult<>(null, store);
         }
         TransferResult<CFValue, CFStore> superResult = super.visitAssignment(n, in);
 
@@ -207,16 +229,12 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
     }
 
     protected CFValue buildNewValue(
-            Tree tree, Class<? extends Annotation> anno, List<String>... states) {
+            Tree tree, Class<? extends Annotation> anno, List<String> states) {
         AnnotationMirror newAnnoMirror;
         AnnotationBuilder builder = new AnnotationBuilder(env, anno);
         // process states
-        if (states.length > 0) {
-            List<String> states1 = states[0];
-            if (states.length > 1) {
-                states1.addAll(states[1]);
-            }
-            builder.setValue("value", states1);
+        if (states != null) {
+            builder.setValue("value", states);
         }
         newAnnoMirror = builder.build();
         AnnotationMirrorSet newLhsSet = new AnnotationMirrorSet();
@@ -225,18 +243,20 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 newLhsSet, atypeFactory.getAnnotatedType(tree).getUnderlyingType());
     }
 
+    /*
     @Override
     protected void processPostconditions(
             Node n, CFStore store, ExecutableElement executableElement, ExpressionTree tree) {
         // TODO: if does not match the signature, then return
-        if (atypeFactory.atomoton == null) {
+        if (atypeFactory.automaton == null) {
             super.processPostconditions(n, store, executableElement, tree);
             return;
         }
 
+        @SuppressWarnings("unchecked")
         Map<String, Map<String, Map<String, String>>> operations =
                 (Map<String, Map<String, Map<String, String>>>)
-                        atypeFactory.atomoton.get("operations");
+                        atypeFactory.automaton.get("operations");
         // Check operations
         if (!operations.containsKey(
                 ((Symbol.MethodSymbol) executableElement).baseSymbol().toString())) {
@@ -248,23 +268,21 @@ public class LinearTransfer extends CFAbstractTransfer<CFValue, CFStore, LinearT
                 operations.get(((Symbol.MethodSymbol) executableElement).baseSymbol().toString());
         // Whether the postconditions hold
         ContractsFromMethod contractsUtils = atypeFactory.getContractsFromMethod();
-        Contract.Postcondition[] postconditions =
-                contractsUtils
-                        .getPostconditions(executableElement)
-                        .toArray(
-                                new Contract.Postcondition
-                                        [contractsUtils
-                                                .getPostconditions(executableElement)
-                                                .size()]);
-        for (int i = 0; i < postconditions.length; i++) {
-            AnnotationMirror annotationMirror = postconditions[i].annotation;
+        Set<Contract.Postcondition> postConditionSet =
+                contractsUtils.getPostconditions(executableElement);
+        for (Contract.Postcondition postCondition : postConditionSet) {
+            AnnotationMirror annotationMirror = postCondition.annotation;
             List<String> postStates =
                     AnnotationUtils.getElementValueArray(
-                            annotationMirror, "value", String.class, true);
+                            annotationMirror, atypeFactory.ensureUniqueValueElement, String.class);
+     // TODO: there currently is no example for this error.
+     // The check does not pass Error Prone - there is a mismatch between what postStates contains
+     // and what transition.get returns.
             if (!postStates.contains(transition.get("after"))) {
                 atypeFactory.getChecker().reportError(tree, "typestate.operation.invalid");
             }
         }
         super.processPostconditions(n, store, executableElement, tree);
     }
+    */
 }

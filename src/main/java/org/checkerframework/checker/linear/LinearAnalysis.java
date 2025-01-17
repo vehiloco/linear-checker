@@ -21,11 +21,11 @@ import javax.lang.model.type.TypeMirror;
 
 public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearTransfer> {
 
-    private final LinearAnnotatedTypeFactory atypeFactory;
+    private final LinearAnnotatedTypeFactory linearAtypeFactory;
 
     public LinearAnalysis(BaseTypeChecker checker, LinearAnnotatedTypeFactory factory) {
         super(checker, factory);
-        this.atypeFactory = factory;
+        this.linearAtypeFactory = factory;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
 
         // TODO: there is a bug, the lhs node should be updated later, think about a way to do it.
         if (node instanceof AssignmentNode) {
-            Node rhsNode = ((AssignmentNode) node).getExpression();
+            // Node rhsNode = ((AssignmentNode) node).getExpression();
             // update lhs value
             Node lhsNode = ((AssignmentNode) node).getTarget();
 
@@ -106,10 +106,10 @@ public class LinearAnalysis extends CFAbstractAnalysis<CFValue, CFStore, LinearT
                 atypeFactory.getAnnotationMirror(rhsNode.getTree(), Unique.class);
         if (lhsAMUnique != null && rhsAMUnique != null && lhsValue != null) {
             for (AnnotationMirror lhsAnno : lhsValue.getAnnotations()) {
-                if (AnnotationUtils.areSameByName(atypeFactory.UNIQUE, lhsAnno)) {
+                if (AnnotationUtils.areSameByName(linearAtypeFactory.UNIQUE, lhsAnno)) {
                     List<String> lhsStatesList =
                             AnnotationUtils.getElementValueArray(
-                                    lhsAnno, "value", String.class, true);
+                                    lhsAnno, linearAtypeFactory.uniqueValueElement, String.class);
                     // TODO: hard to check
                     if (lhsStatesList.size() > 0) {
                         return true;
