@@ -27,6 +27,8 @@ class EnsureUniqueTest {
         // transfer state and the rhs becomes disappear
         newBytesIv = bytesIV;
         // newBytesIv becomes @Unique({"used"}).
+        // TODO: look into why there is an new error here
+        // :: error: (argument.type.incompatible)
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;

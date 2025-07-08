@@ -55,14 +55,14 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
 
     // Parameter can not be btm, return type can not be btm
     @Override
-    public Void visitMethod(MethodTree node, Void p) {
+    public void processMethodTree(String className, MethodTree tree) {
         AnnotatedTypeMirror.AnnotatedExecutableType methodType =
-                atypeFactory.getAnnotatedType(node).deepCopy();
+                atypeFactory.getAnnotatedType(tree).deepCopy();
         // Type check receiver
-        VariableTree receiverTree = node.getReceiverParameter();
+        VariableTree receiverTree = tree.getReceiverParameter();
         if (receiverTree != null
                 && atypeFactory.getAnnotationMirror(receiverTree, Disappear.class) != null) {
-            checker.reportError(node, "disappear.receiver.not.allowed");
+            checker.reportError(tree, "disappear.receiver.not.allowed");
         }
 
         // type check parameters
@@ -70,7 +70,7 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         for (int i = 0; i < parameterTypes.size(); i++) {
             AnnotationMirror ant = parameterTypes.get(i).getAnnotation(Disappear.class);
             if (ant != null && AnnotationUtils.areSameByName(ant, DISAPPEAR)) {
-                checker.reportError(node, "disappear.parameter.not.allowed");
+                checker.reportError(tree, "disappear.parameter.not.allowed");
             }
         }
         // type check return type
@@ -78,10 +78,10 @@ public class LinearVisitor extends BaseTypeVisitor<LinearAnnotatedTypeFactory> {
         if (returnType != null) {
             AnnotationMirror ant = returnType.getAnnotation(Disappear.class);
             if (ant != null) {
-                checker.reportError(node, "disappear.return.not.allowed");
+                checker.reportError(tree, "disappear.return.not.allowed");
             }
         }
-        return super.visitMethod(node, p);
+        super.processMethodTree(className, tree);
     }
 
     @Override
