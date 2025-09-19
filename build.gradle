@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         if (JavaVersion.current() >= JavaVersion.VERSION_11) {
-            classpath 'com.diffplug.spotless:spotless-plugin-gradle:7.0.2'
+            classpath 'com.diffplug.spotless:spotless-plugin-gradle:7.2.1'
         }
     }
 }
@@ -29,7 +29,7 @@ ext {
     versions = [
         checkerFramework: "3.49.1-eisop1",
         errorproneJavacVersion: "9+181-r4173-1",
-        errorproneCoreVersion: "2.36.0",
+        errorproneCoreVersion: "2.40.0",
     ]
 
     // Keep in sync with the same variable in checker-framework/build.gradle
