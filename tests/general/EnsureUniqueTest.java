@@ -25,8 +25,11 @@ class EnsureUniqueTest {
         secureRandom.nextBytes(bytesIV);
         byte @Unique({}) [] newBytesIv;
         // transfer state and the rhs becomes disappear
+        // TODO: here the transformation does not happen as expected, lhs is still @Unique []
+        // instead of @Unique("initialized")[], which causes next line to fail
         newBytesIv = bytesIV;
         // newBytesIv becomes @Unique({"used"}).
+        // :: error: (argument.type.incompatible)
         IvParameterSpec ivSpec = new IvParameterSpec(newBytesIv);
         byte @Unique({}) [] testBytesIv;
         testBytesIv = newBytesIv;
