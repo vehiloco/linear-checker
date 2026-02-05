@@ -29,7 +29,7 @@ ext {
     versions = [
         checkerFramework: "3.49.3-eisop1",
         errorproneJavacVersion: "9+181-r4173-1",
-        errorproneCoreVersion: "2.40.0",
+        errorproneCoreVersion: "2.47.0",
     ]
 
     // Keep in sync with the same variable in checker-framework/build.gradle
